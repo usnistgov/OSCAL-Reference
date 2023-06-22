@@ -1,0 +1,11 @@
+title: OSCAL Reference
+baseURL: pages.nist.gov/OSCAL-Reference
+languageCode: en-us
+module:
+  imports:
+    - path: github.com/usnistgov/hugo-uswds
+enableGitInfo: true
+params:
+  header:
+    project_shortname: OSCAL Reference
+    project_name: OSCAL Project Model Reference
