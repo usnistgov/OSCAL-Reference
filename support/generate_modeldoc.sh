@@ -8,16 +8,13 @@ ROOT_DIR="${SCRIPT_DIR}/.."
 SITE_DIR="${ROOT_DIR}/site"
 # Where generated content will be placed
 RELEASES_DIR="${SITE_DIR}/content/releases"
-# Where OSCAL submodules are located
-REVISIONS_DIR="${ROOT_DIR}/revisions"
+OSCAL_DIR="${ROOT_DIR}/support/OSCAL"
 METASCHEMA_DIR="${ROOT_DIR}/support/metaschema-xslt"
 
 usage() {
   cat <<EOF
 Usage: $(basename "${BASH_SOURCE[0]}") <REVISION>
 Generates model documentation for a specific revision.
-The revision will be pulled from the corresponding ${REVISIONS_DIR} folder of this
-OSCAL-Reference repository and placed into ${RELEASES_DIR}
 EOF
 }
 
@@ -40,32 +37,41 @@ fi
 REVISION=$1
 # The path to write generated content to
 DOC_PATH="${RELEASES_DIR}/${REVISION}"
-# The path to the target OSCAL submodule
-REVISION_PATH="${REVISIONS_DIR}/${REVISION}"
+
+#
+# Git Submodule operations
+#
+
+{
+  cd "${OSCAL_DIR}"
+  git checkout "${REVISION}"
+}
+
+function cleanup() {
+  cd "${OSCAL_DIR}"
+  git checkout main
+}
+
+trap cleanup EXIT
 
 #
 # Set up env vars for hugo generation
 #
 
-REF="$(cd "${REVISION_PATH}";git symbolic-ref -q --short HEAD || git describe --tags --exact-match)"
+REF="$(cd "${OSCAL_DIR}";git symbolic-ref -q --short HEAD || git describe --tags --exact-match)"
 if [[ "$REF" =~ ^v.* ]]; then
   VERSION="${REF/#"v"}"
   TYPE="tag"
   OUTPUT_DIR="${VERSION}"
 elif [ "$REF" = "main" ]; then
-  VERSION="$(cd "${REVISION_PATH}";git describe --abbrev=0)"
+  VERSION="$(cd "${OSCAL_DIR}";git describe --abbrev=0)"
   VERSION="${VERSION/#"v"}"
   TYPE="branch"
   OUTPUT_DIR="latest"
-elif [ "$REF" = "develop" ]; then
-  VERSION="develop"
-  TYPE="branch"
-  OUTPUT_DIR="develop"
 else
-  echo "Unrecognized ref: ${REF}, defaulting to develop" >&2
-  VERSION="develop"
+  VERSION="${REF}"
   TYPE="branch"
-  OUTPUT_DIR="develop"
+  OUTPUT_DIR="${REF}"
 fi
 
 export HUGO_REF_VERSION="${VERSION}"
@@ -148,4 +154,4 @@ do {
     cd "${SITE_DIR}"
     hugo new --kind "${archetype}" "${model_doc_path}"
   }
-} done <   <(find "${REVISION_PATH}/src/metaschema" -type f -name "oscal_*_metaschema.xml" -print0)
+} done <   <(find "${OSCAL_DIR}/src/metaschema" -type f -name "oscal_*_metaschema.xml" -print0)

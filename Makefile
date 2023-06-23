@@ -17,9 +17,9 @@ clean: clean-modeldoc clean-site ## Clean all
 # Website generation / hugo
 #
 
-REVISIONS_DIRS:=$(wildcard revisions/*/)
+REVISIONS:=$(shell cat support/modeldoc_refs.txt)
 REFERENCE_DIR:=site/content/releases
-REVISIONS_MODELDOC_DIRS:=$(patsubst revisions/%/,$(REFERENCE_DIR)/%/,$(REVISIONS_DIRS))
+REVISIONS_MODELDOC_DIRS:=$(patsubst %,$(REFERENCE_DIR)/%/,$(REVISIONS))
 SITE_OUTPUT:=site/public
 
 .PHONY: serve
@@ -43,6 +43,8 @@ clean-site: ## Clean the site
 .PHONY: modeldoc
 modeldoc: $(REVISIONS_MODELDOC_DIRS) ## Generate model documentation
 
+# Cannot be run in parallel as it modifies the OSCAL directory
+.NOTPARALLEL: $(REFERENCE_DIR)/%/
 # TODO specify archetypes/ as a dependency
 $(REFERENCE_DIR)/%/:
 	./support/generate_modeldoc.sh $*

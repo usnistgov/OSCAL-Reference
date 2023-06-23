@@ -2,17 +2,7 @@
 	path = support/metaschema-xslt
 	# temporarily until https://github.com/usnistgov/metaschema-xslt/pull/3/files is merged
 	url = https://github.com/wendellpiez/metaschema-xslt.git
-[submodule "revisions/1.0.4"]
-	path = revisions/1.0.4
+[submodule "support/OSCAL"]
+	path = support/OSCAL
 	url = https://github.com/usnistgov/OSCAL.git
-	shallow = true
-	fetchRecurseSubmodules = false
-[submodule "revisions/1.0.5"]
-	path = revisions/1.0.5
-	url = https://github.com/usnistgov/OSCAL.git
-	shallow = true
-[submodule "revisions/1.0.3"]
-	path = revisions/1.0.3
-	url = https://github.com/usnistgov/OSCAL.git
-	shallow = true
 	fetchRecurseSubmodules = false
