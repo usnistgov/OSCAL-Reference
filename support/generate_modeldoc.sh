@@ -75,14 +75,18 @@ export SITE_OUTPUT_DIR="${RELEASES_DIR}/${OUTPUT_DIR}"
 # TODO parse remote (line 172 of original script)
 export HUGO_REF_REMOTE="usnistgov/OSCAL"
 
+#
 # Generate index page
+#
 
 {
   cd "${SITE_DIR}"
   hugo new --kind reference-index "${DOC_PATH}/_index.md"
 }
 
-# # Setup temporary/scratch directory
+#
+# Set up temporary/scratch directory
+#
 
 # SCRATCH_DIR="${SCRATCH_DIR-$(mktemp -d)}"
 # if [ ! -d "${SCRATCH_DIR}" ]; then
@@ -90,8 +94,63 @@ export HUGO_REF_REMOTE="usnistgov/OSCAL"
 # fi
 # # TODO delete the scratch dir if needed
 
+#
 # Generate per-model documentation
+#
 
-{
+# MODEL_CONFIG.<rawName> = HUGO_MODEL_ID|HUGO_MODEL_NAME|HUGO_LAYER_ID|HUGO_SCHEMA_ID
+MODEL_CONFIG=(
+  "catalog=catalog|Catalog|control|catalog"
+  "profile=profile|Profile|control|profile"
+  "ssp=system-security-plan|System Security Plan|implementation|ssp"
+  "component=component-definition|Component Definition|implementation|component-definition"
+  "assessment-plan=assessment-plan|Assessment Plan|assessment|assessment-plan"
+  "assessment-results=assessment-results|Assessment Results|assessment|assessment-results"
+  "poam=plan-of-action-and-milestones|Plan of Action and Milestones|assessment|poam"
+  "mapping=mapping|Control Mapping|control|mapping"  
+)
 
+function configGet() { 
+  local index=$1
+  for i in "${MODEL_CONFIG[@]}"; do
+    KEY="${i%%=*}"
+    VALUE="${i##*=}"
+    if [[ "$KEY" == "$index" ]]; then
+      printf '%s' "$VALUE"
+      return
+    fi
+  done
 }
+
+# For all metaschema files in the revision directory
+while IFS= read -r -d '' model_path
+do {
+  model_basename=$(basename "$model_path")
+  if [[ "$model_basename" =~ "common" || "$model_basename" =~ "metadata" ]]; then
+    # skip generation for common and metadata metaschemas
+    continue
+  fi
+
+  model_rawname=${model_basename#oscal_}
+  model_rawname=${model_rawname%_metaschema.xml}
+
+  archetype=""
+  model_path=""
+
+  if [[ "$model_rawname" == "complete" ]]; then
+    archetype="complete-reference"
+    model_path="${DOC_PATH}/complete"
+  else
+    archetype="model-reference"
+    IFS="|" read -r HUGO_MODEL_ID HUGO_MODEL_NAME HUGO_LAYER_ID HUGO_SCHEMA_ID <<< "$(configGet "${model_rawname}")"
+    model_path="${DOC_PATH}/${HUGO_MODEL_ID}"
+    export HUGO_MODEL_ID HUGO_MODEL_NAME HUGO_LAYER_ID HUGO_SCHEMA_ID
+  fi
+
+  {
+    cd "${SITE_DIR}"
+    hugo new --kind "${archetype}" "${model_path}"
+  }
+
+  # TODO perform model documentation generation!
+} done <   <(find "${REVISION_PATH}/src/metaschema" -type f -name "oscal_*_metaschema.xml" -print0)
