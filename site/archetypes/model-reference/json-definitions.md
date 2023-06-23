@@ -12,4 +12,6 @@ toc:
 
 The following is a reference for the JSON object definitions derived from the [metaschema](https://github.com/usnistgov/OSCAL/blob/{{ getenv "HUGO_REF_BRANCH" }}//src/metaschema/oscal_{{ getenv "HUGO_SCHEMA_ID" }}_metaschema.xml) for this [model]({{ getenv "HUGO_MODEL_CONCEPTS_URL" }}).
 
-<!-- DO NOT REMOVE. Generated text below -->
+{{< rawhtml >}}
+{{ os.ReadFile (printf "%s/%s" (getenv "HUGO_MODEL_DATA_DIR") "json-definitions.html") }}
+{{< /rawhtml >}}

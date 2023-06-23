@@ -4,3 +4,4 @@ public
 
 # all directories here are generated on the fly
 content/releases/*/
+data/releases/*/

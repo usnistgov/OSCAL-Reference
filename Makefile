@@ -50,3 +50,4 @@ $(REFERENCE_DIR)/%/:
 .PHONY: clean-modeldoc
 clean-modeldoc: ## Clean model documentation
 	rm -fr $(REVISIONS_MODELDOC_DIRS)
+	rm -fr site/data/releases/*/

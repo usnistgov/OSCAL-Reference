@@ -85,16 +85,6 @@ export HUGO_REF_REMOTE="usnistgov/OSCAL"
 }
 
 #
-# Set up temporary/scratch directory
-#
-
-# SCRATCH_DIR="${SCRATCH_DIR-$(mktemp -d)}"
-# if [ ! -d "${SCRATCH_DIR}" ]; then
-#   mkdir -p "${SCRATCH_DIR}"
-# fi
-# # TODO delete the scratch dir if needed
-
-#
 # Generate per-model documentation
 #
 
@@ -134,23 +124,28 @@ do {
   model_rawname=${model_basename#oscal_}
   model_rawname=${model_rawname%_metaschema.xml}
 
+  export HUGO_MODEL_DATA_DIR="data/releases/${REVISION}/${model_rawname}"
+  model_data="${SITE_DIR}/$HUGO_MODEL_DATA_DIR"
+
+  mvn -f "${METASCHEMA_DIR}/pom.xml" exec:java \
+    -Dexec.mainClass="com.xmlcalabash.drivers.Main" \
+    -Dexec.args="-i source=$model_path output-path=file://$model_data/ ${METASCHEMA_DIR}/src/write-hugo-metaschema-docs.xpl"
+
   archetype=""
-  model_path=""
+  model_doc_path=""
 
   if [[ "$model_rawname" == "complete" ]]; then
     archetype="complete-reference"
-    model_path="${DOC_PATH}/complete"
+    model_doc_path="${DOC_PATH}/complete"
   else
     archetype="model-reference"
     IFS="|" read -r HUGO_MODEL_ID HUGO_MODEL_NAME HUGO_LAYER_ID HUGO_SCHEMA_ID <<< "$(configGet "${model_rawname}")"
-    model_path="${DOC_PATH}/${HUGO_MODEL_ID}"
+    model_doc_path="${DOC_PATH}/${HUGO_MODEL_ID}"
     export HUGO_MODEL_ID HUGO_MODEL_NAME HUGO_LAYER_ID HUGO_SCHEMA_ID
   fi
 
   {
     cd "${SITE_DIR}"
-    hugo new --kind "${archetype}" "${model_path}"
+    hugo new --kind "${archetype}" "${model_doc_path}"
   }
-
-  # TODO perform model documentation generation!
 } done <   <(find "${REVISION_PATH}/src/metaschema" -type f -name "oscal_*_metaschema.xml" -print0)

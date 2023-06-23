@@ -11,4 +11,6 @@ sidenav:
 
 The following outline is a representation of the [JSON format](https://github.com/usnistgov/OSCAL/blob/{{ getenv "HUGO_REF_BRANCH" }}/json/schema/oscal_{{ getenv "HUGO_SCHEMA_ID" }}_schema.json) for the combination of all OSCAL models. For each property, the name links to the corresponding entry in the [JSON Format Reference](../json-reference/). The cardinality and data type are also provided for each property where appropriate.
 
-<!-- DO NOT REMOVE. Generated text below -->
+{{< rawhtml >}}
+{{ os.ReadFile (printf "%s/%s" (getenv "HUGO_MODEL_DATA_DIR") "json-outline.html") }}
+{{< /rawhtml >}}
