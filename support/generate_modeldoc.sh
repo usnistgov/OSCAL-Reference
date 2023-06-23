@@ -13,7 +13,7 @@ REVISIONS_DIR="${ROOT_DIR}/revisions"
 METASCHEMA_DIR="${ROOT_DIR}/support/metaschema-xslt"
 
 usage() {
-    cat <<EOF
+  cat <<EOF
 Usage: $(basename "${BASH_SOURCE[0]}") <REVISION>
 Generates model documentation for a specific revision.
 The revision will be pulled from the corresponding ${REVISIONS_DIR} folder of this
