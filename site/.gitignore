@@ -1,5 +1,6 @@
 .hugo_build.lock
 resources/_gen
+public
 
 # all directories here are generated on the fly
 content/releases/*/

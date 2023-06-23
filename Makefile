@@ -10,12 +10,43 @@ help: ## Show this help message
 	} \
 	{ printf "\033[32m%-30s\033[0m %s\n", $$1, $$2 }'
 
-REFERENCE_DIR:=site/content/releases
+.PHONY: clean
+clean: clean-modeldoc clean-site ## Clean all
+
+#
+# Website generation / hugo
+#
+
 REVISIONS_DIRS:=$(wildcard revisions/*/)
+REFERENCE_DIR:=site/content/releases
 REVISIONS_MODELDOC_DIRS:=$(patsubst revisions/%/,$(REFERENCE_DIR)/%/,$(REVISIONS_DIRS))
+SITE_OUTPUT:=site/public
+
+.PHONY: serve
+serve: modeldoc ## Spin up a static web server for local dev
+	cd site; hugo serve
+
+.PHONY: site
+site: $(SITE_OUTPUT) ## Build the site
+
+$(SITE_OUTPUT): modeldoc
+	cd site; hugo
+
+.PHONY: clean-site
+clean-site: ## Clean the site
+	rm -fr $(SITE_OUTPUT)
+
+#
+# Model documentation
+#
 
 .PHONY: modeldoc
 modeldoc: $(REVISIONS_MODELDOC_DIRS) ## Generate model documentation
 
+# TODO specify archetypes/ as a dependency
 $(REFERENCE_DIR)/%/:
 	./support/generate_modeldoc.sh $*
+
+.PHONY: clean-modeldoc
+clean-modeldoc: ## Clean model documentation
+	rm -fr $(REVISIONS_MODELDOC_DIRS)
