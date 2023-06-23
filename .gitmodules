@@ -7,3 +7,12 @@
 	url = https://github.com/usnistgov/OSCAL.git
 	shallow = true
 	fetchRecurseSubmodules = false
+[submodule "revisions/1.0.5"]
+	path = revisions/1.0.5
+	url = https://github.com/usnistgov/OSCAL.git
+	shallow = true
+[submodule "revisions/1.0.3"]
+	path = revisions/1.0.3
+	url = https://github.com/usnistgov/OSCAL.git
+	shallow = true
+	fetchRecurseSubmodules = false
