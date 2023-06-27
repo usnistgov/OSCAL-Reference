@@ -20,12 +20,37 @@ jobs:
         with:
           hugo-version: "0.110.0"
           extended: true
-      - name: Setup Swap Space
-        # Since Hugo is requiring more memory
+      - name: Setup swap space
+        # The Hugo build can require a significant amount of memory
         uses: pierotofy/set-swap-space@49819abfb41bd9b44fb781159c033dba90353a7c
         with:
           swap-size-gb: 10
+      - name: Cache generated content for existing tags
+        uses: actions/cache@v3
+        with:
+          # explicitly do not cache main or develop as they are likely to change
+          path: |
+            site/content/models/v*/
+            site/data/models/v*/
+          key: ${{ hashFiles('site/archetypes/**') }}-${{ hashFiles('support/*.sh') }}-${{ hashFiles('support/*.txt') }}
+          # A change to modeldoc_refs.txt would trigger a new cache, but we might want to restore the previous version's cache
+          # See https://github.com/actions/cache/blob/main/tips-and-workarounds.md#update-a-cache
+          restore-keys: |
+            ${{ hashFiles('site/archetypes/**') }}-${{ hashFiles('support/*.sh') }}
       - name: Build
         # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
         # GHA runners have 2 CPUs
         run: make site -j2
+      # - name: Deploy
+      #   uses: peaceiris/action-gh-pages@v3
+      #   # only deploy if on master branch
+      #   if: github.ref == 'refs/heads/master'
+      #   with:
+      #     github_token: ${{ secrets.COMMIT_TOKEN }}
+      #     enable_jekyll: false
+      #     publish_dir: ./site/public
+      #     publish_branch: nist-pages
+      #     commit_user_name: OSCAL GitHub Actions Bot
+      #     commit_user_email: oscal@nist.gov
+      #     commit_author: OSCAL GitHub Actions Bot <oscal@nist.gov>
+      #     commit_message: Deploying website [ci deploy]
