@@ -45,11 +45,13 @@ DOC_PATH="${RELEASES_DIR}/${REVISION}"
 SCRATCH_DIR="$(mktemp -d)"
 
 {
+  echo "Creating temporary worktree at ${REVISION} in ${SCRATCH_DIR}" >&2
   cd "${OSCAL_DIR}"
-  git worktree add -f "${SCRATCH_DIR}" "${REVISION}"
+  git worktree add --quiet --force "${SCRATCH_DIR}" "${REVISION}"
 }
 
 function cleanup() {
+  echo "Removing temporary worktree ${SCRATCH_DIR}" >&2
   cd "${OSCAL_DIR}"
   git worktree remove "${SCRATCH_DIR}"
   rm -fr "${SCRATCH_DIR}"

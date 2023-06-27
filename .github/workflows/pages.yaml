@@ -20,6 +20,11 @@ jobs:
         with:
           hugo-version: "0.110.0"
           extended: true
+      - name: Setup Swap Space
+        # Since Hugo is requiring more memory
+        uses: pierotofy/set-swap-space@49819abfb41bd9b44fb781159c033dba90353a7c
+        with:
+          swap-size-gb: 10
       - name: Build
         # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
         # GHA runners have 2 CPUs
