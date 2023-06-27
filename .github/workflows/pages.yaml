@@ -21,4 +21,6 @@ jobs:
           hugo-version: "0.110.0"
           extended: true
       - name: Build
-        run: make site
+        # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
+        # GHA runners have 2 CPUs
+        run: make site -j2

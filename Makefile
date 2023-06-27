@@ -43,8 +43,6 @@ clean-site: ## Clean the site
 .PHONY: modeldoc
 modeldoc: $(REVISIONS_MODELDOC_DIRS) ## Generate model documentation
 
-# Cannot be run in parallel as it modifies the OSCAL directory
-.NOTPARALLEL: $(REFERENCE_DIR)/%/
 # TODO specify archetypes/ as a dependency
 $(REFERENCE_DIR)/%/:
 	./support/generate_modeldoc.sh $*

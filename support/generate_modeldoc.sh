@@ -42,29 +42,31 @@ DOC_PATH="${RELEASES_DIR}/${REVISION}"
 # Git Submodule operations
 #
 
+SCRATCH_DIR="$(mktemp -d)"
+
 {
   cd "${OSCAL_DIR}"
-  git checkout "${REVISION}"
+  git worktree add -f "${SCRATCH_DIR}" "${REVISION}"
 }
 
 function cleanup() {
   cd "${OSCAL_DIR}"
-  git checkout main
+  git worktree remove "${SCRATCH_DIR}"
+  rm -fr "${SCRATCH_DIR}"
 }
-
 trap cleanup EXIT
 
 #
 # Set up env vars for hugo generation
 #
 
-REF="$(cd "${OSCAL_DIR}";git symbolic-ref -q --short HEAD || git describe --tags --exact-match)"
+REF="$(cd "${SCRATCH_DIR}";git symbolic-ref -q --short HEAD || git describe --tags --exact-match)"
 if [[ "$REF" =~ ^v.* ]]; then
   VERSION="${REF/#"v"}"
   TYPE="tag"
   OUTPUT_DIR="${VERSION}"
 elif [ "$REF" = "main" ]; then
-  VERSION="$(cd "${OSCAL_DIR}";git describe --abbrev=0)"
+  VERSION="$(cd "${SCRATCH_DIR}";git describe --abbrev=0)"
   VERSION="${VERSION/#"v"}"
   TYPE="branch"
   OUTPUT_DIR="latest"
@@ -133,7 +135,9 @@ do {
   export HUGO_MODEL_DATA_DIR="data/releases/${REVISION}/${model_rawname}"
   model_data="${SITE_DIR}/$HUGO_MODEL_DATA_DIR"
 
-  mvn -f "${METASCHEMA_DIR}/pom.xml" exec:java \
+  mvn \
+    --quiet \
+    -f "${METASCHEMA_DIR}/pom.xml" exec:java \
     -Dexec.mainClass="com.xmlcalabash.drivers.Main" \
     -Dexec.args="-i source=$model_path output-path=file://$model_data/ ${METASCHEMA_DIR}/src/write-hugo-metaschema-docs.xpl"
 
@@ -154,4 +158,4 @@ do {
     cd "${SITE_DIR}"
     hugo new --kind "${archetype}" "${model_doc_path}"
   }
-} done <   <(find "${OSCAL_DIR}/src/metaschema" -type f -name "oscal_*_metaschema.xml" -print0)
+} done <   <(find "${SCRATCH_DIR}/src/metaschema" -type f -name "oscal_*_metaschema.xml" -print0)
