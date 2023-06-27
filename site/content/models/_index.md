@@ -3,7 +3,7 @@ title: Model Reference
 layout: reference-index
 menu:
   primary:
-    name: Releases
+    name: Model Reference
     weight: 35
 toc:
   enabled: true

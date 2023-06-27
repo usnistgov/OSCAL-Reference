@@ -3,5 +3,5 @@ resources/_gen
 public
 
 # all directories here are generated on the fly
-content/releases/*/
-data/releases/*/
+content/models/*/
+data/models/*/

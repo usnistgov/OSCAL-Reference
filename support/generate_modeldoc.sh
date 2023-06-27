@@ -7,7 +7,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="${SCRIPT_DIR}/.."
 SITE_DIR="${ROOT_DIR}/site"
 # Where generated content will be placed
-RELEASES_DIR="${SITE_DIR}/content/releases"
+SITE_MODELDOC_DIR="${SITE_DIR}/content/models"
 OSCAL_DIR="${ROOT_DIR}/support/OSCAL"
 METASCHEMA_DIR="${ROOT_DIR}/support/metaschema-xslt"
 
@@ -36,7 +36,7 @@ fi
 [[ -z "${1-}" ]] && { echo "Error: REVISION not specified" >&2; usage; exit 1; }
 REVISION=$1
 # The path to write generated content to
-DOC_PATH="${RELEASES_DIR}/${REVISION}"
+DOC_PATH="${SITE_MODELDOC_DIR}/${REVISION}"
 
 #
 # Git Submodule operations
@@ -81,7 +81,7 @@ fi
 export HUGO_REF_VERSION="${VERSION}"
 export HUGO_REF_BRANCH="${REF}"
 export HUGO_REF_TYPE="${TYPE}"
-export SITE_OUTPUT_DIR="${RELEASES_DIR}/${OUTPUT_DIR}"
+export SITE_OUTPUT_DIR="${SITE_MODELDOC_DIR}/${OUTPUT_DIR}"
 # TODO parse remote (line 172 of original script)
 export HUGO_REF_REMOTE="usnistgov/OSCAL"
 
@@ -134,7 +134,7 @@ do {
   model_rawname=${model_basename#oscal_}
   model_rawname=${model_rawname%_metaschema.xml}
 
-  export HUGO_MODEL_DATA_DIR="data/releases/${REVISION}/${model_rawname}"
+  export HUGO_MODEL_DATA_DIR="data/models/${REVISION}/${model_rawname}"
   model_data="${SITE_DIR}/$HUGO_MODEL_DATA_DIR"
 
   mvn \

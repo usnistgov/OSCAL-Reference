@@ -1,6 +1,9 @@
 ---
-title: Reference
+title: OSCAL-Reference
 layout: home
 toc:
-  enabled: true
+  enabled: false
 ---
+
+<!-- TODO: flesh this out -->
+This site contains per-version references of the OSCAL models.

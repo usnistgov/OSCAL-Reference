@@ -18,8 +18,10 @@ clean: clean-modeldoc clean-site ## Clean all
 #
 
 REVISIONS:=$(shell cat support/modeldoc_refs.txt)
-REFERENCE_DIR:=site/content/releases
-REVISIONS_MODELDOC_DIRS:=$(patsubst %,$(REFERENCE_DIR)/%/,$(REVISIONS))
+MODELDOC_CONTENT_DIR:=site/content/models
+MODELDOC_REVISION_CONTENT_DIR:=$(patsubst %,$(MODELDOC_CONTENT_DIR)/%/,$(REVISIONS))
+MODELDOC_DATA_DIR:=site/data/models
+MODELDOC_REVISION_DATA_DIR:=$(patsubst %,$(MODELDOC_DATA_DIR)/%/,$(REVISIONS))
 SITE_OUTPUT:=site/public
 
 .PHONY: serve
@@ -41,13 +43,13 @@ clean-site: ## Clean the site
 #
 
 .PHONY: modeldoc
-modeldoc: $(REVISIONS_MODELDOC_DIRS) ## Generate model documentation
+modeldoc: $(MODELDOC_REVISION_CONTENT_DIR) ## Generate model documentation
 
 # TODO specify archetypes/ as a dependency
-$(REFERENCE_DIR)/%/:
+$(MODELDOC_CONTENT_DIR)/%/:
 	./support/generate_modeldoc.sh $*
 
 .PHONY: clean-modeldoc
 clean-modeldoc: ## Clean model documentation
-	rm -fr $(REVISIONS_MODELDOC_DIRS)
-	rm -fr site/data/releases/*/
+	rm -fr $(MODELDOC_REVISION_CONTENT_DIR)
+	rm -fr $(MODELDOC_REVISION_DATA_DIR)

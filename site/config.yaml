@@ -1,11 +1,26 @@
 title: OSCAL Reference
 baseURL: pages.nist.gov/OSCAL-Reference
+relativeURLs: true
+canonifyURLs: true
 languageCode: en-us
 module:
   imports:
     - path: github.com/usnistgov/hugo-uswds
 enableGitInfo: true
+googleAnalytics: UA-66610693-1
+pygmentsCodeFences: true
+pygmentsCodefencesGuessSyntax: true
+pygmentsUseClasses: true
 params:
   header:
     project_shortname: OSCAL Reference
     project_name: OSCAL Project Model Reference
+menu:
+  primary:
+    - name: OSCAL Site
+      url: "https://pages.nist.gov/OSCAL"
+      weight: 1000
+  secondary:
+    - name: Github
+      url: https://github.com/usnistgov/OSCAL-Reference
+      weight: 90
