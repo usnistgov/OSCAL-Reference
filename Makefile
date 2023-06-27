@@ -30,7 +30,7 @@ serve: modeldoc ## Spin up a static web server for local dev
 site: $(SITE_OUTPUT) ## Build the site
 
 $(SITE_OUTPUT): modeldoc
-	cd site; hugo
+	cd site; hugo --minify
 
 .PHONY: clean-site
 clean-site: ## Clean the site
