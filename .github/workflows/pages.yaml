@@ -45,7 +45,8 @@ jobs:
         uses: peaceiris/actions-gh-pages@068dc23d9710f1ba62e86896f84735d869951305
         if: github.ref == 'refs/heads/main'
         with:
-          personal_token: ${{ secrets.COMMIT_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # personal_token: ${{ secrets.COMMIT_TOKEN }}
           enable_jekyll: false
           publish_dir: ./site/public
           publish_branch: nist-pages
