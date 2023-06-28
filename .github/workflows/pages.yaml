@@ -42,15 +42,13 @@ jobs:
         # GHA runners have 2 CPUs
         run: make site -j2
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        # only deploy if on master branch
+        uses: peaceiris/actions-gh-pages@068dc23d9710f1ba62e86896f84735d869951305
         if: github.ref == 'refs/heads/main'
         with:
-          github_token: ${{ secrets.COMMIT_TOKEN }}
+          personal_token: ${{ secrets.COMMIT_TOKEN }}
           enable_jekyll: false
           publish_dir: ./site/public
           publish_branch: nist-pages
-          commit_user_name: OSCAL GitHub Actions Bot
-          commit_user_email: oscal@nist.gov
-          commit_author: OSCAL GitHub Actions Bot <oscal@nist.gov>
+          user_name: OSCAL GitHub Actions Bot
+          user_email: oscal@nist.gov
           commit_message: Deploying website [ci deploy]
