@@ -139,7 +139,7 @@ do {
 
   mvn \
     --quiet \
-    -f "${METASCHEMA_DIR}/pom.xml" exec:java \
+    -f "${METASCHEMA_DIR}/support/pom.xml" exec:java \
     -Dexec.mainClass="com.xmlcalabash.drivers.Main" \
     -Dexec.args="-i source=$model_path output-path=file://$model_data/ ${METASCHEMA_DIR}/src/write-hugo-metaschema-docs.xpl"
 
