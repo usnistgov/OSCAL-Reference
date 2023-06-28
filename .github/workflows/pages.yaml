@@ -25,6 +25,11 @@ jobs:
         uses: pierotofy/set-swap-space@49819abfb41bd9b44fb781159c033dba90353a7c
         with:
           swap-size-gb: 10
+      - name: Get the list of tagged revisions (for cache)
+        id: get-revisions
+        run: |
+          echo revisions_hash=$(cd support/OSCAL; git tag | grep -E '^v\d+\.\d+\.\d+$' | sha256sum) >> $GITHUB_OUTPUT
+        shell: bash
       - name: Cache generated content for existing tags
         uses: actions/cache@v3
         with:
@@ -32,8 +37,8 @@ jobs:
           path: |
             site/content/models/v*/
             site/data/models/v*/
-          key: ${{ hashFiles('site/archetypes/**') }}-${{ hashFiles('support/*.sh') }}-${{ hashFiles('support/*.txt') }}
-          # A change to modeldoc_refs.txt would trigger a new cache, but we might want to restore the previous version's cache
+          key: ${{ hashFiles('site/archetypes/**') }}-${{ hashFiles('support/*.sh') }}-${{ steps.get-revisions.outputs.revisions_hash }}
+          # A new tagged revision will invalidate the primary cache key
           # See https://github.com/actions/cache/blob/main/tips-and-workarounds.md#update-a-cache
           restore-keys: |
             ${{ hashFiles('site/archetypes/**') }}-${{ hashFiles('support/*.sh') }}

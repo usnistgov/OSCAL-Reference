@@ -17,7 +17,7 @@ clean: clean-modeldoc clean-site ## Clean all
 # Website generation / hugo
 #
 
-REVISIONS:=$(shell cat support/modeldoc_refs.txt)
+REVISIONS:=$(shell ./support/list_revisions.sh)
 MODELDOC_CONTENT_DIR:=site/content/models
 MODELDOC_REVISION_CONTENT_DIR:=$(patsubst %,$(MODELDOC_CONTENT_DIR)/%/,$(REVISIONS))
 MODELDOC_DATA_DIR:=site/data/models
