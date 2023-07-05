@@ -16,8 +16,6 @@ TAGGED_REVISIONS=$(echo "${TAGS}" | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$')
 # sort tags (which should be in semver-ish format)
 TAGGED_REVISIONS=$(echo "${TAGGED_REVISIONS}" | sort -t "." -k1,1n -k2,2n -k3,3n)
 # exclude the last (newest) revision, which is duplicated by the "main" branch revision
-# solution compatible with macOS: https://stackoverflow.com/a/4881936
-TAGGED_REVISIONS=$(echo "${TAGGED_REVISIONS}" | awk 'NR>1{print buf}{buf = $0}')
 
 # always include "main" and "develop" revisions
 echo "main"
