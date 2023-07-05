@@ -6,4 +6,4 @@ toc:
 ---
 
 <!-- TODO: flesh this out -->
-This site contains per-version references of the OSCAL models.
+This site contains versioned references of the OSCAL models.
