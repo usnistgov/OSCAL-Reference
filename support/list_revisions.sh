@@ -20,6 +20,5 @@ TAGGED_REVISIONS=$(echo "${TAGGED_REVISIONS}" | sort -t "." -k1,1n -k2,2n -k3,3n
 TAGGED_REVISIONS=$(echo "${TAGGED_REVISIONS}" | awk 'NR>1{print buf}{buf = $0}')
 
 # always include "main" and "develop" revisions
-echo "main"
 echo "develop"
 echo "${TAGGED_REVISIONS}"
