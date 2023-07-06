@@ -8,6 +8,10 @@ sidenav:
 toc:
   enabled: true
   headingselectors: "h1.toc1"
+{{ if eq (getenv "HUGO_REF_LATEST") "true" }}
+aliases:
+  - /models/latest/complete/json-index/
+{{ end }}
 ---
 
 The following is an index of each JSON property used in the [JSON format](https://github.com/usnistgov/OSCAL/blob/{{ getenv "HUGO_REF_BRANCH" }}/json/schema/oscal_{{ getenv "HUGO_SCHEMA_ID" }}_schema.json), which represents the combination of all OSCAL models. Each entry in the index lists all uses of the given property in the format, which is linked to the corresponding entry in the [JSON Format Reference](../json-reference/). Each entry also lists the formal name for the definition which is linked to the corresponding JSON definition in the [JSON Format Metaschema Reference](../json-definitions/).

@@ -33,7 +33,7 @@ jobs:
       - name: Cache generated content for existing tags
         uses: actions/cache@v3
         with:
-          # explicitly do not cache main or develop as they are likely to change
+          # explicitly do not cache develop as they are likely to change
           path: |
             site/content/models/v*/
             site/data/models/v*/

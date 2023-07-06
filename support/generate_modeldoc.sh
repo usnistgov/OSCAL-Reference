@@ -66,22 +66,19 @@ REF="$(cd "${SCRATCH_DIR}";git symbolic-ref -q --short HEAD || git describe --ta
 if [[ "$REF" =~ ^v.* ]]; then
   VERSION="${REF/#"v"}"
   TYPE="tag"
-  OUTPUT_DIR="${VERSION}"
-elif [ "$REF" = "main" ]; then
-  VERSION="$(cd "${SCRATCH_DIR}";git describe --abbrev=0)"
-  VERSION="${VERSION/#"v"}"
-  TYPE="branch"
-  OUTPUT_DIR="latest"
 else
   VERSION="${REF}"
   TYPE="branch"
-  OUTPUT_DIR="${REF}"
+fi
+
+LATEST=$("${ROOT_DIR}"/support/list_revisions.sh | tail -n 1)
+if [[ "$VERSION" == "${LATEST/#"v"}" ]]; then
+  export HUGO_REF_LATEST="true"
 fi
 
 export HUGO_REF_VERSION="${VERSION}"
 export HUGO_REF_BRANCH="${REF}"
 export HUGO_REF_TYPE="${TYPE}"
-export SITE_OUTPUT_DIR="${SITE_MODELDOC_DIR}/${OUTPUT_DIR}"
 # TODO parse remote (line 172 of original script)
 export HUGO_REF_REMOTE="usnistgov/OSCAL"
 
