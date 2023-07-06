@@ -8,6 +8,10 @@ sidenav:
   focusrenderdepth: 1
   activerenderdepth: -1
   inactiverenderdepth: 1
+{{ if eq (getenv "HUGO_REF_LATEST") "true" }}
+aliases:
+  - /models/latest/{{ getenv "HUGO_MODEL_ID" }}/
+{{ end }}
 ---
 
 <p><span class="usa-tag">Release Version</span> {{ if eq (getenv "HUGO_REF_VERSION") "develop" }}Latest Development Snapshot{{ else }}OSCAL v{{ getenv "HUGO_REF_VERSION" }}{{ end }}</p>
