@@ -1,5 +1,5 @@
 title: OSCAL Reference
-baseURL: pages.nist.gov/OSCAL-Reference
+baseURL: https://pages.nist.gov/OSCAL-Reference
 relativeURLs: true
 canonifyURLs: true
 languageCode: en-us
