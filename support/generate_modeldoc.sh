@@ -76,8 +76,11 @@ if [[ "$VERSION" == "${LATEST/#"v"}" ]]; then
   export HUGO_REF_LATEST="true"
 fi
 
+# branch name or version with a stripped "v" (e.g. v1.0.0 -> 1.0.0)
 export HUGO_REF_VERSION="${VERSION}"
+# branch name or intact version tag
 export HUGO_REF_BRANCH="${REF}"
+# "tag" or "branch"
 export HUGO_REF_TYPE="${TYPE}"
 # TODO parse remote (line 172 of original script)
 export HUGO_REF_REMOTE="usnistgov/OSCAL"
