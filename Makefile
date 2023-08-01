@@ -11,7 +11,7 @@ help: ## Show this help message
 	{ printf "\033[32m%-30s\033[0m %s\n", $$1, $$2 }'
 
 .PHONY: clean
-clean: clean-modeldoc clean-site ## Clean all
+clean: clean-modeldoc clean-site clean-release-assets ## Clean all
 
 #
 # Website generation / hugo
@@ -25,13 +25,13 @@ MODELDOC_REVISION_DATA_DIR:=$(patsubst %,$(MODELDOC_DATA_DIR)/%/,$(REVISIONS))
 SITE_OUTPUT:=site/public
 
 .PHONY: serve
-serve: modeldoc ## Spin up a static web server for local dev
+serve: modeldoc release-assets ## Spin up a static web server for local dev
 	cd site; hugo serve
 
 .PHONY: site
 site: $(SITE_OUTPUT) ## Build the site
 
-$(SITE_OUTPUT): modeldoc
+$(SITE_OUTPUT): modeldoc release-assets
 	cd site; hugo --minify
 
 .PHONY: clean-site
@@ -53,3 +53,19 @@ $(MODELDOC_CONTENT_DIR)/%/:
 clean-modeldoc: ## Clean model documentation
 	rm -fr $(MODELDOC_REVISION_CONTENT_DIR)
 	rm -fr $(MODELDOC_REVISION_DATA_DIR)
+
+#
+# Release assets link
+#
+
+RELEASE_ASSET_REDIRECTS_DIR:=site/content/release-assets/latest/
+
+.PHONY: release-assets
+release-assets: $(RELEASE_ASSET_REDIRECTS_DIR) ## Generate redirects to latest release's assets
+
+$(RELEASE_ASSET_REDIRECTS_DIR):
+	./support/generate_release_assets_redirect.sh
+
+.PHONY: clean-release-assets
+clean-release-assets: ## Clean release redirects
+	rm -fr site/content/release-assets/latest/
