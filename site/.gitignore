@@ -5,3 +5,4 @@ public
 # all directories here are generated on the fly
 content/models/*/
 data/models/*/
+content/release-assets/latest/*
