@@ -9,6 +9,12 @@ SITE_DIR="${ROOT_DIR}/site"
 # Where generated content will be placed
 SITE_MODELDOC_DIR="${SITE_DIR}/content/models"
 OSCAL_DIR="${ROOT_DIR}/support/OSCAL"
+
+if [[ ${LOCAL_OSCAL_DIR:+1} ]] ; then
+  echo "LOCAL_OSCAL_DIR is set. Using local repository at ${LOCAL_OSCAL_DIR} instead of OSCAL_DIR."
+  OSCAL_DIR=${LOCAL_OSCAL_DIR}
+fi
+
 METASCHEMA_DIR="${ROOT_DIR}/support/metaschema-xslt"
 
 usage() {

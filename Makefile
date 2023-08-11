@@ -18,6 +18,7 @@ clean: clean-modeldoc clean-site clean-release-assets ## Clean all
 #
 
 REVISIONS:=develop $(shell ./support/list_revisions.sh)
+LOCAL_OSCAL_DIR:=""
 MODELDOC_CONTENT_DIR:=site/content/models
 MODELDOC_REVISION_CONTENT_DIR:=$(patsubst %,$(MODELDOC_CONTENT_DIR)/%/,$(REVISIONS))
 MODELDOC_DATA_DIR:=site/data/models
