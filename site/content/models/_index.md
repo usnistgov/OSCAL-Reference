@@ -1,9 +1,9 @@
 ---
-title: Model Reference
+title: Model Documentation
 layout: reference-index
 menu:
   primary:
-    name: Model Reference
+    name: Model Documentation
     weight: 35
 toc:
   enabled: true
