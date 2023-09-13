@@ -56,9 +56,9 @@ done < <(find "${SCRATCH_DIR}/src/metaschema" \
         -a ! -name '*metadata*' \
     -exec basename {} _metaschema.xml ';')
 
-ASSETS=()
+ARTIFACTS=()
 while IFS='' read -r asset; do
-  ASSETS+=("$asset")
+  ARTIFACTS+=("$artifact")
 done < <(make -C "${SCRATCH_DIR}" list-release-artifacts)
 
 OUTPUT_PATH=release-assets/latest
