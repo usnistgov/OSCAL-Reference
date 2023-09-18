@@ -69,3 +69,22 @@ $(RELEASE_ASSET_REDIRECTS_DIR):
 .PHONY: clean-release-assets
 clean-release-assets: ## Clean release redirects
 	rm -fr site/content/release-assets/latest/
+
+#
+# Checks
+#
+
+LYCHEE_IGNORE_FILE:=./support/lychee_ignore.txt
+LYCHEE_CONFIG_FILE:=./support/lychee.toml
+# Flags that currently cannot be configured via the configuration file
+LYCHEE_FLAGS:=--verbose --format markdown
+# Extra flags for the user to override (used to set github token in GHA workflow)
+LYCHEE_EXTRA_FLAGS:=
+
+.PHONY: linkcheck
+linkcheck: site
+	lychee \
+		--exclude-file '$(LYCHEE_IGNORE_FILE)' \
+		--config '$(LYCHEE_CONFIG_FILE)' \
+		$(LYCHEE_FLAGS) $(LYCHEE_EXTRA_FLAGS) \
+		'$(SITE_OUTPUT)/**/*.html'
