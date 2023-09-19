@@ -6,11 +6,6 @@ on:
   pull_request: {}
   workflow_dispatch:
     inputs:
-      swap_size_gb:
-        description: The amount of swap to allocate
-        default: 10
-        required: false
-        type: number
       ignore_linkcheck:
         description: Ignore link checker results when deploying
         required: false

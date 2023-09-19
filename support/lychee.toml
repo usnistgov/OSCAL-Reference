@@ -4,5 +4,4 @@ accept = [200, 206, 429]
 
 cache = true
 
-output = "lychee_report.md"
 # format = "markdown" # currently does not exist, must specify --format markdown
