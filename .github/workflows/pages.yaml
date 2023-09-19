@@ -6,7 +6,7 @@ on:
   pull_request: {}
   workflow_dispatch:
     inputs:
-      swapSizeGb:
+      swap_size_gb:
         description: The amount of swap to allocate
         default: 10
         required: false
@@ -56,7 +56,7 @@ jobs:
         # The Hugo build can require a significant amount of memory
         uses: pierotofy/set-swap-space@49819abfb41bd9b44fb781159c033dba90353a7c
         with:
-          swap-size-gb: ${{ github.event.inputs.swapSizeGb }}
+          swap-size-gb: "10"
       #
       # Set up cache
       #
