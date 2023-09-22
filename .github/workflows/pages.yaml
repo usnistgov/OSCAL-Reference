@@ -34,7 +34,7 @@ jobs:
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
-          hugo-version: "0.118.2"
+          hugo-version: "${{ env.HUGO_VERSION }}"
           extended: true
       # lifted from https://github.com/lycheeverse/lychee-action/blob/master/action.yml
       - name: Setup Lychee
