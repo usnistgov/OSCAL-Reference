@@ -58,8 +58,8 @@ done < <(find "${SCRATCH_DIR}/src/metaschema" \
 
 ARTIFACTS=()
 while IFS='' read -r asset; do
-  ARTIFACTS+=("$artifact")
-done < <(make -C "${SCRATCH_DIR}" list-release-artifacts)
+  ARTIFACTS+=("$asset")
+done < <(make -C "${SCRATCH_DIR}/build" list-release-artifacts)
 
 OUTPUT_PATH=release-assets/latest
 GH_RELEASES_URL=https://github.com/usnistgov/OSCAL/releases
