@@ -56,13 +56,10 @@ done < <(find "${SCRATCH_DIR}/src/metaschema" \
         -a ! -name '*metadata*' \
     -exec basename {} _metaschema.xml ';')
 
-# For each metaschema, append the appropriate schema and converter assets
-ASSETS=(
-    "${ROOT_METASCHEMAS[@]/%/_schema.json}"
-    "${ROOT_METASCHEMAS[@]/%/_schema.xsd}"
-    "${ROOT_METASCHEMAS[@]/%/_json-to-xml-converter.xsl}"
-    "${ROOT_METASCHEMAS[@]/%/_xml-to-json-converter.xsl}"
-)
+ARTIFACTS=()
+while IFS='' read -r asset; do
+  ARTIFACTS+=("$asset")
+done < <(make -C "${SCRATCH_DIR}/build" list-release-artifacts)
 
 OUTPUT_PATH=release-assets/latest
 GH_RELEASES_URL=https://github.com/usnistgov/OSCAL/releases
