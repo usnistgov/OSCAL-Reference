@@ -41,25 +41,10 @@ function cleanup() {
 }
 trap cleanup EXIT
 
-# Populate ROOT_METASCHEMAS with all metaschema basenames (oscal_catalog ... etc.)
-# The find block:
-# 1. Finds all files in the scratch directory's src/metaschema directory that match *_metaschema.xml
-# 2. Exclude non-root metaschemas ("common" and "metadata" metaschemas)
-# 3. Strip the path, leaving just the filename
-# 4. Strip the "_metaschema.xml" suffix, leaving just "oscal_$name"
-ROOT_METASCHEMAS=()
-while IFS='' read -r metaschema; do
-    ROOT_METASCHEMAS+=("$metaschema")
-done < <(find "${SCRATCH_DIR}/src/metaschema" \
-    -name '*_metaschema.xml' \
-        -a ! -name '*common*' \
-        -a ! -name '*metadata*' \
-    -exec basename {} _metaschema.xml ';')
-
-ARTIFACTS=()
-while IFS='' read -r asset; do
-  ARTIFACTS+=("$asset")
-done < <(make -C "${SCRATCH_DIR}/build" list-release-artifacts)
+ASSETS=()
+for asset in $(make -sC "${SCRATCH_DIR}/build" list-release-artifacts); do
+  ASSETS+=("$asset")
+done
 
 OUTPUT_PATH=release-assets/latest
 GH_RELEASES_URL=https://github.com/usnistgov/OSCAL/releases
