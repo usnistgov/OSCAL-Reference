@@ -134,14 +134,20 @@ do {
   model_rawname=${model_basename#oscal_}
   model_rawname=${model_rawname%_metaschema.xml}
 
-  export HUGO_MODEL_DATA_DIR="data/models/${REVISION}/${model_rawname}"
-  model_data="${SITE_DIR}/$HUGO_MODEL_DATA_DIR"
+  # The path to the model relative to the hugo data dir, output dir, and site root
+  model_output_path="models/${REVISION}/${model_rawname}"
+
+  # The directory Hugo will read the models from relative to the site directory
+  export HUGO_MODEL_DATA_DIR="data/$model_output_path"
+
+  # The root of the OSCAL Reference site
+  page_base_path="OSCAL-Reference/$model_output_path/"
 
   mvn \
     --quiet \
     -f "${METASCHEMA_DIR}/support/pom.xml" exec:java \
     -Dexec.mainClass="com.xmlcalabash.drivers.Main" \
-    -Dexec.args="-i source=$model_path output-path=file://$model_data/ ${METASCHEMA_DIR}/src/document/write-hugo-metaschema-docs.xpl"
+    -Dexec.args="-i source=$model_path page-base-path=$page_base_path output-path=file://${SITE_DIR}/$HUGO_MODEL_DATA_DIR/ ${METASCHEMA_DIR}/src/document/write-hugo-metaschema-docs.xpl"
 
   archetype=""
   model_doc_path=""
