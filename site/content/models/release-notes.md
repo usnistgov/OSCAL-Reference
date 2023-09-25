@@ -45,28 +45,28 @@ The following general changes were made in this release.
 
 ### Changes to Profile Model
 
-In /profile/modify/alter ([JSON/YAML](/reference/latest/profile/json-reference/#/profile/modify/alters), [XML](/reference/latest/profile/xml-reference/#/profile/modify/alter)) the following changes were made. See issue [usnistgov/OSCAL#928](https://github.com/usnistgov/OSCAL/issues/928).
+In /profile/modify/alter ([JSON/YAML](/models/latest/profile/json-reference/#/profile/modify/alters), [XML](/models/latest/profile/xml-reference/#/profile/modify/alter)) the following changes were made. See issue [usnistgov/OSCAL#928](https://github.com/usnistgov/OSCAL/issues/928).
 
-- The item remove ([JSON/YAML](/reference/latest/profile/json-reference/#/profile/modify/alters/removes), [XML](/reference/latest/profile/xml-reference/#/profile/modify/alter/remove)) has had its child properties/attributes renamed as follows:
+- The item remove ([JSON/YAML](/models/latest/profile/json-reference/#/profile/modify/alters/removes), [XML](/models/latest/profile/xml-reference/#/profile/modify/alter/remove)) has had its child properties/attributes renamed as follows:
   - name-ref -> by-name
   - class-ref -> by-class
   - id-ref -> by-id
   - item-name -> by-item-name
   - ns-ref -> by-ns
 
-- The item add ([JSON/YAML](/reference/latest/profile/json-reference/#/profile/modify/alters/adds), [XML](/reference/latest/profile/xml-reference/#/profile/modify/alter/add)) has had its child properties/attributes renamed as follows:
+- The item add ([JSON/YAML](/models/latest/profile/json-reference/#/profile/modify/alters/adds), [XML](/models/latest/profile/xml-reference/#/profile/modify/alter/add)) has had its child properties/attributes renamed as follows:
   - id-ref -> by-id
 
 ### Changes to System Security Plan Model
 
-In /system-security-plan/control-implementation/implemented-requirement ([JSON/YAML](/reference/latest/system-security-plan/json-reference/#/system-security-plan/control-implementation/implemented-requirements), [XML](/reference/latest/system-security-plan/xml-reference/#/system-security-plan/control-implementation/implemented-requirement))
+In /system-security-plan/control-implementation/implemented-requirement ([JSON/YAML](/models/latest/system-security-plan/json-reference/#/system-security-plan/control-implementation/implemented-requirements), [XML](/models/latest/system-security-plan/xml-reference/#/system-security-plan/control-implementation/implemented-requirement))
 
-- The item control-id ([JSON/YAML](/reference/latest/system-security-plan/json-reference/#/system-security-plan/control-implementation/implemented-requirements/control-id), [XML](/reference/latest/system-security-plan/xml-reference/#/system-security-plan/control-implementation/implemented-requirement/@control-id)) is now required
+- The item control-id ([JSON/YAML](/models/latest/system-security-plan/json-reference/#/system-security-plan/control-implementation/implemented-requirements/control-id), [XML](/models/latest/system-security-plan/xml-reference/#/system-security-plan/control-implementation/implemented-requirement/@control-id)) is now required
 - In XML the ordering of elements has changed (i.e. responsible-role was moved in the sequence). This change was made to keep the XML element sequencing consistent between this model and the component definition model.
 
 ### Changes to Assessment Results Model
 
-- The item findings ([JSON/YAML](/reference/latest/assessment-results/json-reference/#/assessment-results/results/findings), [XML](/reference/latest/assessment-results/xml-reference/#/assessment-results/result/finding)) is now optional. See issue [usnistgov/OSCAL#918](https://github.com/usnistgov/OSCAL/issues/918).
+- The item findings ([JSON/YAML](/models/latest/assessment-results/json-reference/#/assessment-results/results/findings), [XML](/models/latest/assessment-results/xml-reference/#/assessment-results/result/finding)) is now optional. See issue [usnistgov/OSCAL#918](https://github.com/usnistgov/OSCAL/issues/918).
 
 ## OSCAL 1.0.0 Release Candidate 2
 
