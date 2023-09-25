@@ -134,6 +134,9 @@ do {
   model_rawname=${model_basename#oscal_}
   model_rawname=${model_rawname%_metaschema.xml}
 
+  # Used to refer to the generated schemas
+  export HUGO_MODEL_RAWNAME=$model_rawname
+
   # The path to the model relative to the hugo data dir, output dir, and site root
   model_output_path="models/${REVISION}/${model_rawname}"
 

@@ -3,5 +3,3 @@ exclude_mail = true
 accept = [200, 206, 429]
 
 cache = true
-
-# format = "markdown" # currently does not exist, must specify --format markdown

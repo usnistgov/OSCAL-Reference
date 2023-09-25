@@ -14,7 +14,7 @@ aliases:
 {{ end }}
 ---
 
-The following is a reference for the XML element and attribute types derived from this model's [metaschema](https://github.com/usnistgov/OSCAL/blob/{{ getenv "HUGO_REF_BRANCH" }}/src/metaschema/oscal_{{ getenv "HUGO_SCHEMA_ID" }}_metaschema.xml).
+The following is a reference for the XML element and attribute types derived from this model's [metaschema](https://github.com/usnistgov/OSCAL/blob/{{ getenv "HUGO_REF_BRANCH" }}/src/metaschema/oscal_{{ getenv "HUGO_MODEL_RAWNAME" }}_metaschema.xml).
 
 {{< rawhtml >}}
 {{ os.ReadFile (printf "%s/%s" (getenv "HUGO_MODEL_DATA_DIR") "xml-definitions.html") }}
