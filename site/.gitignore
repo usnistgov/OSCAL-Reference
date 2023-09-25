@@ -6,3 +6,6 @@ public
 content/models/*/
 data/models/*/
 content/release-assets/latest/*
+
+# Aliased to Metaschema datatypes page
+!content/models/datatypes/
