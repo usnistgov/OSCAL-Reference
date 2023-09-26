@@ -11,6 +11,8 @@ on:
         required: false
         default: false
         type: boolean
+permissions:
+  pull-requests: write
 env:
   LYCHEE_VERSION: "0.13.0"
   HUGO_VERSION: "0.118.2"
@@ -92,11 +94,18 @@ jobs:
       - name: Link Check
         id: linkcheck
         run: make linkcheck LYCHEE_EXTRA_FLAGS='--github-token ${{ secrets.GITHUB_TOKEN }}'
-      # TODO
-      # - name: Comment Broken Links
-      #   uses: marocchino/sticky-pull-request-comment@v2
-      #   with:
-      #     path: lychee_report.md
+      - name: Upload linkcheck report
+        uses: actions/upload-artifact@v3
+        with:
+          name: linkcheck-report
+          path: lychee_report.md
+          retention-days: 5
+      - name: Comment broken links
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          path: lychee_report.md
+          skip_unchanged: true
+        if: github.event_name == 'pull_request'
       #
       # Deployment
       #
