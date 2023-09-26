@@ -11,6 +11,9 @@ on:
         required: false
         default: false
         type: boolean
+  schedule:
+    - cron: "0 0 * * MON"
+    - cron: "0 0 * * THU"
 permissions:
   pull-requests: write
 env:
@@ -112,7 +115,8 @@ jobs:
       - name: Deploy
         uses: peaceiris/actions-gh-pages@068dc23d9710f1ba62e86896f84735d869951305
         # Deploy if on main branch and EITHER the linkcheck succeeds or ignore_linkcheck has been flipped
-        if: github.ref == 'refs/heads/main' && (steps.linkcheck.outcome == 'success' || github.event.inputs.ignore_linkcheck)
+        #   crucially ignore periodic checks
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (steps.linkcheck.outcome == 'success' || github.event.inputs.ignore_linkcheck)
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           enable_jekyll: false
