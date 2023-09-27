@@ -118,7 +118,7 @@ jobs:
         #   crucially ignore periodic checks
         if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (steps.linkcheck.outcome == 'success' || github.event.inputs.ignore_linkcheck)
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.COMMIT_TOKEN }}
           enable_jekyll: false
           publish_dir: ./site/public
           publish_branch: nist-pages
