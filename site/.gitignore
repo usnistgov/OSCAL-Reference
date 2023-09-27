@@ -7,5 +7,6 @@ content/models/*/
 data/models/*/
 content/release-assets/latest/*
 
-# Aliased to Metaschema datatypes page
+# Aliased to other pages
 !content/models/datatypes/
+!content/models/release-notes/
