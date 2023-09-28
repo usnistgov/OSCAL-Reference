@@ -79,6 +79,7 @@ jobs:
           prefix="${{ format('{0}', github.event.inputs.prefix) || 'prototype' }}"
           branches=$(cd "${OSCAL_DIR}"; git ls-remote origin "${prefix}*" | sed -n -e "s|^.*\(refs/heads/\)\(${prefix}\)|\2|p")
           # Wildcards after a stable tag prefix like v* for v1.0.0 will not work, so generate outputs for content and data paths for next step
+          echo branches="${branches}" >> $GITHUB_OUTPUT
           echo content_paths=$(printf "site/content/models/%s/\n" $branches) >> $GITHUB_OUTPUT
           echo data_paths=$(printf "site/content/data/%s/\n" $branches) >> $GITHUB_OUTPUT
           # Prototype branch content may change so hash branch name and current commit hash for its HEAD as restore key part
@@ -98,6 +99,7 @@ jobs:
             cache-models-${{ hashFiles('site/archetypes/**') }}-${{ hashFiles('support/*.sh') }}
       - name: Cache generated content for existing prototype-branches
         uses: actions/cache@v3
+        if: steps.get-prototype-branches.outputs.branches != ''
         with:
           path: |
             ${{ steps.get-prototype-branches.outputs.content_paths }}
