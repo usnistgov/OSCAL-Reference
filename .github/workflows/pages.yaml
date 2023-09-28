@@ -11,6 +11,13 @@ on:
         required: false
         default: false
         type: boolean
+      revisions:
+        description: Override the computed list of tags and branches with a space-separated list of tags and branches, in order from first to last. Refer to Makefile REVISIONS declaration.
+        required: false
+      prefix:
+        description: Provide a prefix for experimental branches that need to be published alongside tags. It is ignored if revisions is overridden. Refer to the PROTOTYPE_BRANCHES_PREFIX declaration.
+        required: false
+        type: string        
   schedule:
     - cron: "0 0 * * MON"
     - cron: "0 0 * * THU"
@@ -65,6 +72,18 @@ jobs:
         run: |
           echo revisions_hash=$(cd support/OSCAL; git tag | grep -E '^v\d+\.\d+\.\d+$' | sha256sum) >> $GITHUB_OUTPUT
         shell: bash
+      - name: Get the list of prototype branches (for cache)
+        id: get-prototype-branches
+        run: |
+          # Use regular variable and not GITHUB_ENV because that only works in next step, not this one
+          prefix="${{ format('{0}', github.event.inputs.prefix) || 'prototype' }}"
+          branches=$(cd "${OSCAL_DIR}"; git ls-remote origin "${prefix}*" | sed -n -e "s|^.*\(refs/heads/\)\(${prefix}\)|\2|p")
+          # Wildcards after a stable tag prefix like v* for v1.0.0 will not work, so generate outputs for content and data paths for next step
+          echo content_paths=$(printf "site/content/models/%s/\n" $branches) >> $GITHUB_OUTPUT
+          echo data_paths=$(printf "site/content/data/%s/\n" $branches) >> $GITHUB_OUTPUT
+          # Prototype branch content may change so hash branch name and current commit hash for its HEAD as restore key part
+          echo branches_hash=$(cd "${OSCAL_DIR}"; git ls-remote origin "${prefix}*" | sha256sum) >> $GITHUB_OUTPUT
+        shell: bash        
       - name: Cache generated content for existing tags
         uses: actions/cache@v3
         with:
@@ -77,6 +96,15 @@ jobs:
           # See https://github.com/actions/cache/blob/main/tips-and-workarounds.md#update-a-cache
           restore-keys: |
             cache-models-${{ hashFiles('site/archetypes/**') }}-${{ hashFiles('support/*.sh') }}
+      - name: Cache generated content for existing prototype-branches
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ steps.get-prototype-branches.outputs.content_paths }}
+            ${{ steps.get-prototype-branches.outputs.data_paths }}
+          key: cache-prototype-branches-${{ hashFiles('site/archetypes/**') }}-${{ hashFiles('support/*.sh') }}-${{ steps.get-prototype-branches.outputs.branches_hash }}
+          restore-keys: |
+            cache-prototype-branches-${{ hashFiles('site/archetypes/**') }}-${{ hashFiles('support/*.sh') }}
       # Cache lychee results (e.g. to avoid hitting rate limits)
       - name: Restore lychee cache
         uses: actions/cache@v3
@@ -90,7 +118,10 @@ jobs:
       - name: Build
         # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
         # GHA runners have 2 CPUs
-        run: make site -j2
+        run: |
+          make site -j2 \
+            ${{ github.event.inputs.revisions != '' && format('REVISIONS=''{0}''', github.event.inputs.revisions) || '' }} \
+            ${{ github.event.inputs.revisions == '' && github.event.inputs.prefix && format('PROTOTYPE_BRANCHES_PREFIX=''{0}''', github.event.inputs.prefix) || '' }}
       #
       # Checks (and check plumbing)
       #
