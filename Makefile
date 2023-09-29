@@ -21,7 +21,7 @@ PROTOTYPE_BRANCHES_REMOTE:=origin
 PROTOTYPE_BRANCHES_PREFIX:=prototype
 # Override REVISIONS to build a subset of the site or a special branch
 #   (e.g. `make site REVISIONS='v1.1.0 my-special-branch'`)
-REVISIONS:=develop $(shell ./support/list_revisions.sh) $(shell PROTOTYPE_BRANCHES_REMOTE="$(PROTOTYPE_BRANCHES_REMOTE)" PROTOTYPE_BRANCHES_PREFIX="$(PROTOTYPE_BRANCHES_PREFIX)" ./support/list_branches.sh)
+REVISIONS:=develop $(shell ./support/list_revisions.sh) $(shell ./support/list_branches.sh ${PROTOTYPE_BRANCHES_REMOTE} ${PROTOTYPE_BRANCHES_PREFIX})
 
 MODELDOC_CONTENT_DIR:=site/content/models
 MODELDOC_REVISION_CONTENT_DIR:=$(patsubst %,$(MODELDOC_CONTENT_DIR)/%/,$(REVISIONS))
@@ -100,3 +100,11 @@ $(LYCHEE_OUTPUT_FILE): $(SITE_OUTPUT_DIR)
 
 clean-linkcheck: ## Clean the linkcheck report
 	rm -f $(LYCHEE_OUTPUT_FILE)
+
+.PHONY: list-tags
+list-tags: ## List OSCAL tagged releases
+	./support/list_revisions.sh
+
+.PHONY: list-prototype-branches
+list-prototype-branches:  ## List OSCAL prototype branches for publication
+	./support/list_branches.sh $(PROTOTYPE_BRANCHES_REMOTE) $(PROTOTYPE_BRANCHES_PREFIX)
