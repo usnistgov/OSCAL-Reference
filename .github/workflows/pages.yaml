@@ -106,8 +106,6 @@ jobs:
             ${{ steps.get-prototype-branches.outputs.content_paths }}
             ${{ steps.get-prototype-branches.outputs.data_paths }}
           key: cache-prototype-branches-${{ hashFiles('site/archetypes/**') }}-${{ hashFiles('support/*.sh') }}-${{ steps.get-prototype-branches.outputs.branches_hash }}
-          restore-keys: |
-            cache-prototype-branches-${{ hashFiles('site/archetypes/**') }}-${{ hashFiles('support/*.sh') }}
       # Cache lychee results (e.g. to avoid hitting rate limits)
       - name: Restore lychee cache
         uses: actions/cache@v3
