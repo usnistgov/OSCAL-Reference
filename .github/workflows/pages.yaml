@@ -128,7 +128,8 @@ jobs:
       #
       - name: Link Check
         id: linkcheck
-        run: make linkcheck LYCHEE_EXTRA_FLAGS='--github-token ${{ secrets.GITHUB_TOKEN }}'
+        run: |
+          make linkcheck LYCHEE_EXTRA_FLAGS='--github-token ${{ secrets.GITHUB_TOKEN }} ${{ env.PREFIX != '' && format('--exclude-path=''*/models/{0}*''', env.PREFIX) || '' }}'
       - name: Upload linkcheck report
         uses: actions/upload-artifact@v3
         with:
