@@ -80,7 +80,6 @@ clean-release-assets: ## Clean release redirects
 #
 
 LYCHEE_OUTPUT_FILE:=lychee_report.md
-LYCHEE_IGNORE_FILE:=./support/lychee_ignore.txt
 LYCHEE_CONFIG_FILE:=./support/lychee.toml
 # Flags that currently cannot be configured via the configuration file
 LYCHEE_FLAGS:=--verbose --format markdown
@@ -92,7 +91,6 @@ linkcheck: $(LYCHEE_OUTPUT_FILE) ## Generate a report of all site links
 
 $(LYCHEE_OUTPUT_FILE): $(SITE_OUTPUT_DIR)
 	lychee \
-		--exclude-file '$(LYCHEE_IGNORE_FILE)' \
 		--config '$(LYCHEE_CONFIG_FILE)' \
 		--output $(LYCHEE_OUTPUT_FILE) \
 		$(LYCHEE_FLAGS) $(LYCHEE_EXTRA_FLAGS) \
