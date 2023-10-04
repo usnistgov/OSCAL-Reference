@@ -80,8 +80,11 @@ jobs:
             # Wildcards after a stable tag prefix like v* for v1.0.0 will not work, so generate outputs for content and data paths for next step
             branches="$(make --silent list-prototype-branches PROTOTYPE_BRANCHES_PREFIX=$PREFIX)"
             echo branches="$branches"
-            echo content_paths="$(printf "site/content/models/%s " $branches)"
-            echo data_paths="$(printf "site/content/data/%s " $branches)"
+            [[ -n "${branches-}" ]] && echo content_paths="$(printf "site/content/models/%s " $branches)"
+            [[ -n "${branches-}" ]] && echo data_paths="$(printf "site/content/data/%s " $branches)"
+            # Be forewarned, printf -- has a special meaning so we must encode the first - as \055 in -- to avoid errors
+            # Explanation: https://unix.stackexchange.com/a/658388
+            [[ -n "${branches-}" ]] && echo linkcheck_exclude_path_arg=$(printf "\055-exclude-path='site/public/models/%s' "  $branches)
             # Prototype branch content may change so hash branch name and current commit hash for its HEAD as restore key part
             echo branches_hash="$(cd "${OSCAL_DIR}"; git ls-remote origin $PREFIX | sha256sum | cut -d ' ' -f 1)"
           } >> $GITHUB_OUTPUT
@@ -129,7 +132,8 @@ jobs:
       - name: Link Check
         id: linkcheck
         run: |
-          make linkcheck LYCHEE_EXTRA_FLAGS='--github-token ${{ secrets.GITHUB_TOKEN }} ${{ env.PREFIX != '' && format('--exclude-path=''*/models/{0}*''', env.PREFIX) || '' }}'
+          make linkcheck LYCHEE_EXTRA_FLAGS='--github-token ${{ secrets.GITHUB_TOKEN }} \
+            ${{ steps.get-prototype-branches.outputs.linkcheck_exclude_path_arg && format('{0}', steps.get-prototype-branches.outputs.linkcheck_exclude_path_arg) || '' }}'
       - name: Upload linkcheck report
         uses: actions/upload-artifact@v3
         with:
