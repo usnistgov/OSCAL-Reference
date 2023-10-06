@@ -17,9 +17,16 @@ clean: clean-modeldoc clean-site clean-release-assets clean-linkcheck ## Clean a
 # Website generation / hugo
 #
 
-# Override REVISIONS to build a subset of the site or a special branch
+PROTOTYPE_BRANCHES_REMOTE:=origin
+PROTOTYPE_BRANCHES_PREFIX:=prototype
+# `REVISIONS` contains a list of Git refs (specifically branches and tags) of the OSCAL repository that documentation will be built for.
+# By default, `REVISIONS` includes:
+# 1. The `develop` branch, showcasing changes staged for the next release.
+# 2. Tagged releases matching a semver pattern (e.g. `v.1.0.0`).
+# 3. Prototype branches matching the specified `PROTOTYPE_BRANCHES_REMOTE` and `PROTOTYPE_BRANCHES_PREFIX`.
+# For local development, `REVISIONS` can be overridden to build a subset of the site
 #   (e.g. `make site REVISIONS='v1.1.0 my-special-branch'`)
-REVISIONS:=develop $(shell ./support/list_revisions.sh)
+REVISIONS:=develop $(shell ./support/list_revisions.sh) $(shell ./support/list_branches.sh ${PROTOTYPE_BRANCHES_REMOTE} ${PROTOTYPE_BRANCHES_PREFIX})
 
 MODELDOC_CONTENT_DIR:=site/content/models
 MODELDOC_REVISION_CONTENT_DIR:=$(patsubst %,$(MODELDOC_CONTENT_DIR)/%/,$(REVISIONS))
@@ -78,7 +85,6 @@ clean-release-assets: ## Clean release redirects
 #
 
 LYCHEE_OUTPUT_FILE:=lychee_report.md
-LYCHEE_IGNORE_FILE:=./support/lychee_ignore.txt
 LYCHEE_CONFIG_FILE:=./support/lychee.toml
 # Flags that currently cannot be configured via the configuration file
 LYCHEE_FLAGS:=--verbose --format markdown
@@ -90,7 +96,6 @@ linkcheck: $(LYCHEE_OUTPUT_FILE) ## Generate a report of all site links
 
 $(LYCHEE_OUTPUT_FILE): $(SITE_OUTPUT_DIR)
 	lychee \
-		--exclude-file '$(LYCHEE_IGNORE_FILE)' \
 		--config '$(LYCHEE_CONFIG_FILE)' \
 		--output $(LYCHEE_OUTPUT_FILE) \
 		$(LYCHEE_FLAGS) $(LYCHEE_EXTRA_FLAGS) \
@@ -98,3 +103,11 @@ $(LYCHEE_OUTPUT_FILE): $(SITE_OUTPUT_DIR)
 
 clean-linkcheck: ## Clean the linkcheck report
 	rm -f $(LYCHEE_OUTPUT_FILE)
+
+.PHONY: list-tags
+list-tags: ## List OSCAL tagged releases
+	./support/list_revisions.sh
+
+.PHONY: list-prototype-branches
+list-prototype-branches:  ## List OSCAL prototype branches for publication
+	./support/list_branches.sh $(PROTOTYPE_BRANCHES_REMOTE) $(PROTOTYPE_BRANCHES_PREFIX)

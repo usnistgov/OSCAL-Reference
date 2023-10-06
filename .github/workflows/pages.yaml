@@ -11,6 +11,13 @@ on:
         required: false
         default: false
         type: boolean
+      revisions:
+        description: Override the computed list of tags and branches with a space-separated list of tags and branches, in order from first to last. Refer to Makefile REVISIONS declaration.
+        required: false
+      prefix:
+        description: Provide a prefix for experimental branches that need to be published alongside tags. It is ignored if revisions is overridden. Refer to the PROTOTYPE_BRANCHES_PREFIX declaration.
+        required: false
+        type: string        
   schedule:
     - cron: "0 0 * * MON"
     - cron: "0 0 * * THU"
@@ -21,6 +28,7 @@ env:
   HUGO_VERSION: "0.118.2"
   JAVA_VERSION: "17"
   JAVA_DISTRIBUTION: "temurin"
+  PREFIX: ${{ format('{0}', github.event.inputs.prefix) || 'prototype' }}
 jobs:
   deploy:
     runs-on: ubuntu-22.04
@@ -63,8 +71,24 @@ jobs:
       - name: Get the list of tagged revisions (for cache)
         id: get-revisions
         run: |
-          echo revisions_hash=$(cd support/OSCAL; git tag | grep -E '^v\d+\.\d+\.\d+$' | sha256sum) >> $GITHUB_OUTPUT
+          echo revisions_hash=$(make --silent list-tags | sha256sum) >> $GITHUB_OUTPUT
         shell: bash
+      - name: Get the list of prototype branches (for cache)
+        id: get-prototype-branches
+        run: |
+          {
+            # Wildcards after a stable tag prefix like v* for v1.0.0 will not work, so generate outputs for content and data paths for next step
+            branches="$(make --silent list-prototype-branches PROTOTYPE_BRANCHES_PREFIX=$PREFIX)"
+            echo branches="$branches"
+            [[ -n "${branches-}" ]] && echo content_paths="$(printf "site/content/models/%s " $branches)"
+            [[ -n "${branches-}" ]] && echo data_paths="$(printf "site/content/data/%s " $branches)"
+            # Be forewarned, printf -- has a special meaning so we must encode the first - as \055 in -- to avoid errors
+            # Explanation: https://unix.stackexchange.com/a/658388
+            [[ -n "${branches-}" ]] && echo linkcheck_exclude_path_arg=$(printf "\055-exclude-path='site/public/models/%s' "  $branches)
+            # Prototype branch content may change so hash branch name and current commit hash for its HEAD as restore key part
+            echo branches_hash="$(cd "${OSCAL_DIR}"; git ls-remote origin $PREFIX | sha256sum | cut -d ' ' -f 1)"
+          } >> $GITHUB_OUTPUT
+        shell: bash        
       - name: Cache generated content for existing tags
         uses: actions/cache@v3
         with:
@@ -77,6 +101,14 @@ jobs:
           # See https://github.com/actions/cache/blob/main/tips-and-workarounds.md#update-a-cache
           restore-keys: |
             cache-models-${{ hashFiles('site/archetypes/**') }}-${{ hashFiles('support/*.sh') }}
+      - name: Cache generated content for existing prototype-branches
+        uses: actions/cache@v3
+        if: steps.get-prototype-branches.outputs.branches != ''
+        with:
+          path: |
+            ${{ steps.get-prototype-branches.outputs.content_paths }}
+            ${{ steps.get-prototype-branches.outputs.data_paths }}
+          key: cache-prototype-branches-${{ hashFiles('site/archetypes/**') }}-${{ hashFiles('support/*.sh') }}-${{ steps.get-prototype-branches.outputs.branches_hash }}
       # Cache lychee results (e.g. to avoid hitting rate limits)
       - name: Restore lychee cache
         uses: actions/cache@v3
@@ -90,13 +122,18 @@ jobs:
       - name: Build
         # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
         # GHA runners have 2 CPUs
-        run: make site -j2
+        run: |
+          make site -j2 \
+            ${{ github.event.inputs.revisions != '' && format('REVISIONS=''{0}''', github.event.inputs.revisions) || '' }} \
+            ${{ github.event.inputs.revisions == '' && github.event.inputs.prefix && format('PROTOTYPE_BRANCHES_PREFIX=''{0}''', github.event.inputs.prefix) || '' }}
       #
       # Checks (and check plumbing)
       #
       - name: Link Check
         id: linkcheck
-        run: make linkcheck LYCHEE_EXTRA_FLAGS='--github-token ${{ secrets.GITHUB_TOKEN }}'
+        run: |
+          make linkcheck LYCHEE_EXTRA_FLAGS='--github-token ${{ secrets.GITHUB_TOKEN }} \
+            ${{ steps.get-prototype-branches.outputs.linkcheck_exclude_path_arg && format('{0}', steps.get-prototype-branches.outputs.linkcheck_exclude_path_arg) || '' }}'
       - name: Upload linkcheck report
         uses: actions/upload-artifact@v3
         with:
