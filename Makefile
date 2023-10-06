@@ -19,7 +19,12 @@ clean: clean-modeldoc clean-site clean-release-assets clean-linkcheck ## Clean a
 
 PROTOTYPE_BRANCHES_REMOTE:=origin
 PROTOTYPE_BRANCHES_PREFIX:=prototype
-# Override REVISIONS to build a subset of the site or a special branch
+# `REVISIONS` contains a list of Git refs (specifically branches and tags) of the OSCAL repository that documentation will be built for.
+# By default, `REVISIONS` includes:
+# 1. The `develop` branch, showcasing changes staged for the next release.
+# 2. Tagged releases matching a semver pattern (e.g. `v.1.0.0`).
+# 3. Prototype branches matching the specified `PROTOTYPE_BRANCHES_REMOTE` and `PROTOTYPE_BRANCHES_PREFIX`.
+# For local development, `REVISIONS` can be overridden to build a subset of the site
 #   (e.g. `make site REVISIONS='v1.1.0 my-special-branch'`)
 REVISIONS:=develop $(shell ./support/list_revisions.sh) $(shell ./support/list_branches.sh ${PROTOTYPE_BRANCHES_REMOTE} ${PROTOTYPE_BRANCHES_PREFIX})
 

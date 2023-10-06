@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# List all branches that generated documentation should target
+# List all OSCAL branches from the specified git remote matching the specified prefix (e.g. prototype)
 
 set -Eeuo pipefail
 
