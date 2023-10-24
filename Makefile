@@ -27,7 +27,8 @@ PROTOTYPE_BRANCHES_PREFIX:=prototype
 # For local development, `REVISIONS` can be overridden to build a subset of the site
 #   (e.g. `make site REVISIONS='v1.1.0 my-special-branch'`)
 REVISIONS:=develop $(shell ./support/list_revisions.sh) $(shell ./support/list_branches.sh ${PROTOTYPE_BRANCHES_REMOTE} ${PROTOTYPE_BRANCHES_PREFIX})
-
+# Release assets link
+RELEASE_ASSET_REDIRECTS_DIR:=site/content/release-assets/latest/
 MODELDOC_CONTENT_DIR:=site/content/models
 MODELDOC_REVISION_CONTENT_DIR:=$(patsubst %,$(MODELDOC_CONTENT_DIR)/%/,$(REVISIONS))
 MODELDOC_DATA_DIR:=site/data/models
@@ -63,12 +64,6 @@ $(MODELDOC_CONTENT_DIR)/%/:
 clean-modeldoc: ## Clean model documentation
 	rm -fr $(MODELDOC_REVISION_CONTENT_DIR)
 	rm -fr $(MODELDOC_REVISION_DATA_DIR)
-
-#
-# Release assets link
-#
-
-RELEASE_ASSET_REDIRECTS_DIR:=site/content/release-assets/latest/
 
 .PHONY: release-assets
 release-assets: $(RELEASE_ASSET_REDIRECTS_DIR) ## Generate redirects to latest release's assets
