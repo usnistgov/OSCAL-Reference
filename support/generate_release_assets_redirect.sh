@@ -42,7 +42,8 @@ function cleanup() {
 trap cleanup EXIT
 
 ASSETS=()
-for asset in $(make -sC "${SCRATCH_DIR}/build" list-release-artifacts RELEASE="${REVISION}" GENERATED_DIR=""); do
+# REVISION will be a tag of the form 'v1.2.3', we use a substitution to remove the v to be '1.2.3'
+for asset in $(make -sC "${SCRATCH_DIR}/build" list-release-artifacts RELEASE="${REVISION#v}" GENERATED_DIR=""); do
   ASSETS+=("$asset")
 done
 
