@@ -42,7 +42,7 @@ function cleanup() {
 trap cleanup EXIT
 
 ASSETS=()
-for asset in $(make -sC "${SCRATCH_DIR}/build" list-release-artifacts GENERATED_DIR=''); do
+for asset in $(make -sC "${SCRATCH_DIR}/build" list-release-artifacts RELEASE="${REVISION}" GENERATED_DIR=""); do
   ASSETS+=("$asset")
 done
 
