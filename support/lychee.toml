@@ -18,5 +18,8 @@ exclude = [
     'https://search.usa.gov/search',
     'https://example.com/.*',
     'https://doi.org/.*',
-    'http://doi.org/.*'
+    'http://doi.org/.*',
+    # Hack: Lychee does not handle links to the base url.
+    # This only occurs in redirects (latest -> v1.1.x)
+    'https://pages.nist.gov/OSCAL-Reference/models/.*',
 ]
