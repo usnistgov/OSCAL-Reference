@@ -125,6 +125,9 @@ jobs:
         run: |
             echo ${{format('REVISIONS=''{0}''', github.event.inputs.revisions)}}
             echo ${{format('PROTOTYPE_BRANCHES_PREFIX=''{0}''', github.event.inputs.prefix)}}
+            echo ${{format('Env github.ref=''{0}''', github.ref)}}
+            echo ${{format('Env github.event_name=''{0}''', github.event_name)}}
+            echo ${{format('Env github.event.inputs.ignore_linkcheck=''{0}''', github.event.inputs.ignore_linkcheck)}}
             make environment
 
       #
