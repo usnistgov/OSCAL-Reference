@@ -31,6 +31,7 @@ SCRATCH_DIR="$(mktemp -d)"
   echo "Creating temporary worktree at ${REVISION} in ${SCRATCH_DIR}" >&2
   cd "${OSCAL_DIR}"
   git worktree add --quiet --force "${SCRATCH_DIR}" "${REVISION}"
+  echo "Done"
 }
 
 function cleanup() {
@@ -38,6 +39,7 @@ function cleanup() {
   cd "${OSCAL_DIR}"
   git worktree remove "${SCRATCH_DIR}"
   rm -fr "${SCRATCH_DIR}"
+  echo "Done"
 }
 trap cleanup EXIT
 
