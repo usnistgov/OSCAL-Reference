@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - test-ci
   pull_request: {}
   workflow_dispatch:
     inputs:
@@ -116,6 +117,16 @@ jobs:
           path: .lycheecache
           key: cache-lychee-${{ github.sha }}
           restore-keys: cache-lychee-
+
+      #
+      # Debug
+      #
+      - name: Debug
+        run: |
+            echo ${{format('REVISIONS=''{0}''', github.event.inputs.revisions)}}
+            echo ${{format('PROTOTYPE_BRANCHES_PREFIX=''{0}''', github.event.inputs.prefix)}}
+            make environment
+
       #
       # Build
       #
