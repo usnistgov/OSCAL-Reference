@@ -12,6 +12,12 @@ cd OSCAL-Reference
 git submodule update --init
 ```
 
+- the OSCAL repository is quite large and when your internet connection is slow the default submodules init may take a while. Hence, to show progress on submodules init you may want to use the --progress option (available in git >= v2.11.0) in the following command:
+
+```
+git submodule update --init  --progress
+```
+
 2. Generate the site
 
 ```sh
