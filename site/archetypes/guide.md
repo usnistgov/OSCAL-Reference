@@ -4,7 +4,7 @@ Each specification consists of an outline, an index, and a reference, for both J
 
 ## Outline Pages
 
-An outline is a navigatable, tree-based representation of OSCAL's models. For example, below is the collapsed OSCAL System Security Plan outline in JSON and XML, respectively. The name links to the corresponding entry in the XML or JSON formats.
+An outline is a navigable, tree-based representation of OSCAL's models. For example, below is the collapsed OSCAL System Security Plan outline in JSON and XML, respectively. The name links to the corresponding entry in the XML or JSON formats.
 
 By clicking on the black triangle in front of an entry, it expands to show child entries.
 
