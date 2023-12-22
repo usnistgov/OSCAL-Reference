@@ -61,11 +61,14 @@ trap cleanup EXIT
 #
 # Set up env vars for hugo generation
 #
-
+PROTOTYPE="prototype"
 REF="$(cd "${SCRATCH_DIR}";git symbolic-ref -q --short HEAD || git describe --tags --exact-match)"
 if [[ "$REF" =~ ^v.* ]]; then
   VERSION="${REF/#"v"}"
   TYPE="tag"
+elif [[ "$REF" =~ .*"$PROTOTYPE".* ]]; then
+  VERSION="${REF}"
+  TYPE="$PROTOTYPE"
 else
   VERSION="${REF}"
   TYPE="branch"
@@ -76,6 +79,8 @@ if [[ "$VERSION" == "${LATEST/#"v"}" ]]; then
   export HUGO_REF_LATEST="true"
 fi
 
+# Original verison tag
+export HUGO_ORIGINAL_VERSION="${REF}"
 # branch name or version with a stripped "v" (e.g. v1.0.0 -> 1.0.0)
 export HUGO_REF_VERSION="${VERSION}"
 # branch name or intact version tag
