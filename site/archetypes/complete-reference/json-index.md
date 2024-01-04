@@ -1,6 +1,14 @@
 ---
-title: "OSCAL Complete {{ if eq (getenv "HUGO_REF_VERSION") "develop" }}Development Snapshot{{ else }}v{{ getenv "HUGO_REF_VERSION" }}{{ end }} JSON Format Index"
-heading: "Complete {{ if eq (getenv "HUGO_REF_VERSION") "develop" }}Development Snapshot{{ else }}v{{ getenv "HUGO_REF_VERSION" }}{{ end }} JSON Format Index"
+title: "OSCAL Complete {{ if eq (getenv "HUGO_REF_VERSION") "develop" }}
+          Development Snapshot
+        {{ else }}
+          {{ getenv "HUGO_REF_BRANCH" }}
+        {{ end }} JSON Format Index"
+heading: "Complete {{ if eq (getenv "HUGO_REF_VERSION") "develop" }}
+            Development Snapshot
+          {{ else }}
+            {{ getenv "HUGO_REF_BRANCH" }}
+          {{ end }} JSON Format Index"
 weight: 30
 generateanchors: false
 sidenav:
