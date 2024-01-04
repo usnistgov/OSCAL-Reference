@@ -1,5 +1,9 @@
 ---
-title: "{{ getenv "HUGO_MODEL_NAME" }} Model {{ if eq (getenv "HUGO_REF_VERSION") "develop" }}Development Snapshot{{ else }}v{{ getenv "HUGO_REF_VERSION" }}{{ end }} Reference"
+title: "{{ getenv "HUGO_MODEL_NAME" }} Model {{ if eq (getenv "HUGO_REF_VERSION") "develop" }}
+          Development Snapshot
+        {{ else }}
+          {{ getenv "HUGO_REF_BRANCH" }}
+        {{ end }} Reference"
 summary: "{{ getenv "HUGO_MODEL_NAME" }} Model"
 weight: 30
 suppresstopiclist: true
@@ -14,7 +18,12 @@ aliases:
 {{ end }}
 ---
 
-<p><span class="usa-tag">Release Version</span> {{ if eq (getenv "HUGO_REF_VERSION") "develop" }}Latest Development Snapshot{{ else }}OSCAL v{{ getenv "HUGO_REF_VERSION" }}{{ end }}</p>
+<p><span class="usa-tag">Release Version</span>
+"{{ if eq (getenv "HUGO_REF_VERSION") "develop" }}
+  Latest Development Snapshot
+{{ else }}OSCAL 
+  {{ getenv "HUGO_REF_BRANCH" }}
+{{ end }}"</p>
 <p><span class="usa-tag">Github</span> <a href="https://github.com/usnistgov/OSCAL">usnistgov/OSCAL</a> <span class="usa-tag">{{ if eq (getenv "HUGO_REF_TYPE") "tag" }}Tag{{ else }}Branch{{end}}</span> <a href="https://github.com/usnistgov/OSCAL/tree/{{ getenv "HUGO_REF_BRANCH" }}">{{ getenv "HUGO_REF_BRANCH" }}</a></p>
 
 The following reference documentation is available for the OSCAL {{ getenv "HUGO_MODEL_NAME" }} model.

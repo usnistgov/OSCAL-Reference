@@ -1,6 +1,14 @@
 ---
-title: "OSCAL Complete {{ if eq (getenv "HUGO_REF_VERSION") "develop" }}Development Snapshot{{ else }}v{{ getenv "HUGO_REF_VERSION" }}{{ end }} JSON Format Outline"
-heading: "Complete {{ if eq (getenv "HUGO_REF_VERSION") "develop" }}Development Snapshot{{ else }}v{{ getenv "HUGO_REF_VERSION" }}{{ end }} JSON Format Outline"
+title: "OSCAL Complete {{ if eq (getenv "HUGO_REF_VERSION") "develop" }}
+          Development Snapshot
+        {{ else }}
+          {{ getenv "HUGO_REF_BRANCH" }}
+        {{ end }} JSON Format Outline"
+heading: "Complete {{ if eq (getenv "HUGO_REF_VERSION") "develop" }}
+            Development Snapshot
+          {{ else }}
+            {{ getenv "HUGO_REF_BRANCH" }}
+          {{ end }} JSON Format Outline"
 custom_js:
   - "/js/oscal-metaschema-map-expander.js"
 weight: 10
