@@ -24,3 +24,13 @@ menu:
     - name: Github
       url: https://github.com/usnistgov/OSCAL-Reference
       weight: 90
+# Disable RSS generation everywhere
+outputs:
+  page:
+    - HTML
+  home:
+    - HTML
+  section:
+    - HTML
+  taxonomy:
+    - HTML

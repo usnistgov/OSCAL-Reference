@@ -6,3 +6,7 @@ public
 content/models/*/
 data/models/*/
 content/release-assets/latest/*
+
+# Aliased to other pages
+!content/models/datatypes/
+!content/models/release-notes/

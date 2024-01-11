@@ -3,34 +3,93 @@ on:
   push:
     branches:
       - main
+      - test-ci
   pull_request: {}
+  workflow_dispatch:
+    inputs:
+      ignore_linkcheck:
+        description: Ignore link checker results when deploying
+        required: false
+        default: false
+        type: boolean
+      revisions:
+        description: Override the computed list of tags and branches with a space-separated list of tags and branches, in order from first to last. Refer to Makefile REVISIONS declaration.
+        required: false
+      prefix:
+        description: Provide a prefix for experimental branches that need to be published alongside tags. It is ignored if revisions is overridden. Refer to the PROTOTYPE_BRANCHES_PREFIX declaration.
+        required: false
+        type: string        
+  schedule:
+    - cron: "0 0 * * MON"
+    - cron: "0 0 * * THU"
+permissions:
+  pull-requests: write
+env:
+  LYCHEE_VERSION: "0.13.0"
+  HUGO_VERSION: "0.118.2"
+  JAVA_VERSION: "17"
+  JAVA_DISTRIBUTION: "temurin"
+  PREFIX: ${{ format('{0}', github.event.inputs.prefix) || 'prototype' }}
 jobs:
   deploy:
     runs-on: ubuntu-22.04
     steps:
+      #
+      # Environment setup
+      #
       - uses: actions/checkout@v3
         with:
           submodules: true
           fetch-depth: 0
       - uses: actions/setup-java@v3
         with:
-          distribution: "temurin"
-          java-version: "17"
+          distribution: "${{ env.JAVA_DISTRIBUTION }}"
+          java-version: "${{ env.JAVA_VERSION }}"
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
-          hugo-version: "0.111.0"
+          hugo-version: "${{ env.HUGO_VERSION }}"
           extended: true
+      # lifted from https://github.com/lycheeverse/lychee-action/blob/master/action.yml
+      - name: Setup Lychee
+        run: |
+          # Cleanup artifacts from previous run in case it crashed
+          rm -rf "lychee-v${{ env.LYCHEE_VERSION }}-x86_64-unknown-linux-gnu.tar.gz" lychee
+          curl -sLO "https://github.com/lycheeverse/lychee/releases/download/v${{ env.LYCHEE_VERSION }}/lychee-v${{ env.LYCHEE_VERSION }}-x86_64-unknown-linux-gnu.tar.gz"
+          tar -xvzf "lychee-v${{ env.LYCHEE_VERSION }}-x86_64-unknown-linux-gnu.tar.gz"
+          rm "lychee-v${{ env.LYCHEE_VERSION }}-x86_64-unknown-linux-gnu.tar.gz"
+          install -t "$HOME/.local/bin" -D lychee 
+          rm lychee
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - name: Setup swap space
         # The Hugo build can require a significant amount of memory
         uses: pierotofy/set-swap-space@49819abfb41bd9b44fb781159c033dba90353a7c
         with:
-          swap-size-gb: 10
+          swap-size-gb: "10"
+      #
+      # Set up cache
+      #
       - name: Get the list of tagged revisions (for cache)
         id: get-revisions
         run: |
-          echo revisions_hash=$(cd support/OSCAL; git tag | grep -E '^v\d+\.\d+\.\d+$' | sha256sum) >> $GITHUB_OUTPUT
+          echo revisions_hash=$(make --silent list-tags | sha256sum) >> $GITHUB_OUTPUT
         shell: bash
+      - name: Get the list of prototype branches (for cache)
+        id: get-prototype-branches
+        run: |
+          {
+            # Wildcards after a stable tag prefix like v* for v1.0.0 will not work, so generate outputs for content and data paths for next step
+            branches="$(make --silent list-prototype-branches PROTOTYPE_BRANCHES_PREFIX=$PREFIX)"
+            echo branches="$branches"
+            [[ -n "${branches-}" ]] && echo content_paths="$(printf "site/content/models/%s " $branches)"
+            [[ -n "${branches-}" ]] && echo data_paths="$(printf "site/content/data/%s " $branches)"
+            # Be forewarned, printf -- has a special meaning so we must encode the first - as \055 in -- to avoid errors
+            # Explanation: https://unix.stackexchange.com/a/658388
+            [[ -n "${branches-}" ]] && echo linkcheck_exclude_path_arg=$(printf "\055-exclude-path='site/public/models/%s' "  $branches)
+            # Prototype branch content may change so hash branch name and current commit hash for its HEAD as restore key part
+            echo branches_hash="$(cd "${OSCAL_DIR}"; git ls-remote origin $PREFIX | sha256sum | cut -d ' ' -f 1)"
+          } >> $GITHUB_OUTPUT
+        shell: bash        
       - name: Cache generated content for existing tags
         uses: actions/cache@v3
         with:
@@ -38,21 +97,79 @@ jobs:
           path: |
             site/content/models/v*/
             site/data/models/v*/
-          key: ${{ hashFiles('site/archetypes/**') }}-${{ hashFiles('support/*.sh') }}-${{ steps.get-revisions.outputs.revisions_hash }}
+          key: cache-models-${{ hashFiles('site/archetypes/**') }}-${{ hashFiles('support/*.sh') }}-${{ steps.get-revisions.outputs.revisions_hash }}
           # A new tagged revision will invalidate the primary cache key
           # See https://github.com/actions/cache/blob/main/tips-and-workarounds.md#update-a-cache
           restore-keys: |
-            ${{ hashFiles('site/archetypes/**') }}-${{ hashFiles('support/*.sh') }}
+            cache-models-${{ hashFiles('site/archetypes/**') }}-${{ hashFiles('support/*.sh') }}
+      - name: Cache generated content for existing prototype-branches
+        uses: actions/cache@v3
+        if: steps.get-prototype-branches.outputs.branches != ''
+        with:
+          path: |
+            ${{ steps.get-prototype-branches.outputs.content_paths }}
+            ${{ steps.get-prototype-branches.outputs.data_paths }}
+          key: cache-prototype-branches-${{ hashFiles('site/archetypes/**') }}-${{ hashFiles('support/*.sh') }}-${{ steps.get-prototype-branches.outputs.branches_hash }}
+      # Cache lychee results (e.g. to avoid hitting rate limits)
+      - name: Restore lychee cache
+        uses: actions/cache@v3
+        with:
+          path: .lycheecache
+          key: cache-lychee-${{ github.sha }}
+          restore-keys: cache-lychee-
+
+      #
+      # Debug
+      #
+      - name: Debug
+        run: |
+            echo ${{format('REVISIONS=''{0}''', github.event.inputs.revisions)}}
+            echo ${{format('PROTOTYPE_BRANCHES_PREFIX=''{0}''', github.event.inputs.prefix)}}
+            echo ${{format('Env github.ref=''{0}''', github.ref)}}
+            echo ${{format('Env github.event_name=''{0}''', github.event_name)}}
+            echo ${{format('Env github.event.inputs.ignore_linkcheck=''{0}''', github.event.inputs.ignore_linkcheck)}}
+            make environment
+
+      #
+      # Build
+      #
       - name: Build
         # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
         # GHA runners have 2 CPUs
-        run: make site -j2
+        run: |
+          make site \
+            ${{ github.event.inputs.revisions != '' && format('REVISIONS=''{0}''', github.event.inputs.revisions) || '' }} \
+            ${{ github.event.inputs.revisions == '' && github.event.inputs.prefix && format('PROTOTYPE_BRANCHES_PREFIX=''{0}''', github.event.inputs.prefix) || '' }}
+      #
+      # Checks (and check plumbing)
+      #
+      - name: Link Check
+        id: linkcheck
+        run: |
+          make linkcheck LYCHEE_EXTRA_FLAGS='--github-token ${{ secrets.GITHUB_TOKEN }} \
+            ${{ steps.get-prototype-branches.outputs.linkcheck_exclude_path_arg && format('{0}', steps.get-prototype-branches.outputs.linkcheck_exclude_path_arg) || '' }}'
+      - name: Upload linkcheck report
+        uses: actions/upload-artifact@v3
+        with:
+          name: linkcheck-report
+          path: lychee_report.md
+          retention-days: 5
+      - name: Comment broken links
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          path: lychee_report.md
+          skip_unchanged: true
+        if: github.event_name == 'pull_request'
+      #
+      # Deployment
+      #
       - name: Deploy
         uses: peaceiris/actions-gh-pages@068dc23d9710f1ba62e86896f84735d869951305
-        if: github.ref == 'refs/heads/main'
+        # Deploy if on main branch and EITHER the linkcheck succeeds or ignore_linkcheck has been flipped
+        #   crucially ignore periodic checks
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (steps.linkcheck.outcome == 'success' || github.event.inputs.ignore_linkcheck)
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          # personal_token: ${{ secrets.COMMIT_TOKEN }}
+          personal_token: ${{ secrets.COMMIT_TOKEN }}
           enable_jekyll: false
           publish_dir: ./site/public
           publish_branch: nist-pages

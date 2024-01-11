@@ -28,7 +28,22 @@ To see other common operations, refer to the [`Makefile`](./Makefile) or simply 
 
 ### Local development
 
-The target `make serve` runs builds the site dependencies and runs `hugo serve`.
+The target `make serve` runs builds the site and runs `hugo serve`.
+
+### Link-checking
+
+This repository uses [Lychee](https://lychee.cli.rs/#/) to crawl the built site for bad external and internal links.
+To perform link-checking, run the target `make linkcheck`.
+The link checker produces a report, nominally located at `./lychee_report.md`.
+
+Lychee is configured to ignore URL patterns present in the [`./support/lychee_ignore.txt`](./support/lychee_ignore.txt).
+
+[Additional configuration](https://lychee.cli.rs/#/usage/cli) can be specified using the Makefile variable `LYCHEE_EXTRA_FLAGS`:
+
+```sh
+# Cache server responses to save bandwidth on repeated runs
+make linkcheck LYCHEE_EXTRA_FLAGS='--cache'
+```
 
 ### Speeding up the build
 

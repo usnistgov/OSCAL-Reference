@@ -1,0 +1,25 @@
+no_progress = true
+exclude_mail = true
+accept = [200, 206, 429]
+exclude = [
+    'https://defense.gov/',
+    'https://federal-agency.gov/.*',
+    'http://federal-agency.gov/ns/oscal',
+    'http://fedramp.gov/ns/oscal',
+    'https://fedramp.gov/ns/oscal',
+    'http://www.first.org/cvss/v2.0',
+    'http://www.first.org/cvss/v3.0',
+    'http://www.first.org/cvss/v3.1',
+    'https://tools.ietf.org/html.*',
+    'http://csrc.nist.gov/ns/.*',
+    'http://csrc.nist.gov/oscal',
+    'https://csrc.nist.gov/projects/cryptographic-module-validation-program/certificate/xxxx',
+    'https://cdn.telos.com/wp-content/uploads/2021/06/22150746/Xacta-360-EULA-US.pdf',
+    'https://search.usa.gov/search',
+    'https://example.com/.*',
+    'https://doi.org/.*',
+    'http://doi.org/.*',
+    # Hack: Lychee does not handle links to the base url.
+    # This only occurs in redirects (latest -> v1.1.x)
+    'https://pages.nist.gov/OSCAL-Reference/models/.*',
+]

@@ -22,7 +22,7 @@ aliases:
 ---
 
 The following outline is a representation of the JSON format for the combination of all OSCAL models.
-The combined schema can be {{ if eq (getenv "HUGO_REF_TYPE") "tag" }}found [here](https://github.com/usnistgov/OSCAL/releases/download/{{ getenv "HUGO_REF_BRANCH" }}/oscal_{{ getenv "HUGO_SCHEMA_ID" }}_schema.json){{ else }}built using [the following instructions](https://github.com/usnistgov/OSCAL/blob/{{ getenv "HUGO_REF_BRANCH" }}/build/README.md#artifact-generation){{ end }}.
+The combined schema can be {{ if eq (getenv "HUGO_REF_TYPE") "tag" }}found [here](https://github.com/usnistgov/OSCAL/releases/download/{{ getenv "HUGO_REF_BRANCH" }}/oscal_{{ getenv "HUGO_MODEL_RAWNAME" }}_schema.json){{ else }}built using [the following instructions](https://github.com/usnistgov/OSCAL/blob/{{ getenv "HUGO_REF_BRANCH" }}/build/README.md#artifact-generation){{ end }}.
 For each property, the name links to the corresponding entry in the [JSON Format Reference](../json-reference/).
 The cardinality and data type are also provided for each property where appropriate.
 

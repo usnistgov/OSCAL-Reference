@@ -48,6 +48,7 @@ SCRATCH_DIR="$(mktemp -d)"
   echo "Creating temporary worktree at ${REVISION} in ${SCRATCH_DIR}" >&2
   cd "${OSCAL_DIR}"
   git worktree add --quiet --force "${SCRATCH_DIR}" "${REVISION}"
+  echo "Done" >&2
 }
 
 function cleanup() {
@@ -55,6 +56,7 @@ function cleanup() {
   cd "${OSCAL_DIR}"
   git worktree remove "${SCRATCH_DIR}"
   rm -fr "${SCRATCH_DIR}"
+  echo "Done" >&2
 }
 trap cleanup EXIT
 
@@ -93,6 +95,7 @@ export HUGO_REF_REMOTE="usnistgov/OSCAL"
 #
 
 {
+  echo "Generate Reference Index Page: ${SITE_DIR}" >&2
   cd "${SITE_DIR}"
   hugo new --kind reference-index "${DOC_PATH}/_index.md"
 }
@@ -110,7 +113,8 @@ MODEL_CONFIG=(
   "assessment-plan=assessment-plan|Assessment Plan|assessment|assessment-plan"
   "assessment-results=assessment-results|Assessment Results|assessment|assessment-results"
   "poam=plan-of-action-and-milestones|Plan of Action and Milestones|assessment|poam"
-  "mapping=mapping|Control Mapping|control|mapping"  
+  "mapping=mapping|Control Mapping|control|mapping"
+  "shared-responsibility=shared-responsibility|Shared Responsibility|control|shared-responsibility"
 )
 
 function configGet() { 
@@ -137,14 +141,20 @@ do {
   model_rawname=${model_basename#oscal_}
   model_rawname=${model_rawname%_metaschema.xml}
 
-  export HUGO_MODEL_DATA_DIR="data/models/${REVISION}/${model_rawname}"
-  model_data="${SITE_DIR}/$HUGO_MODEL_DATA_DIR"
+  # Used to refer to the generated schemas
+  export HUGO_MODEL_RAWNAME=$model_rawname
+
+  # The path to the model relative to the hugo data dir, output dir, and site root
+  model_output_path="models/${REVISION}/${model_rawname}"
+
+  # The directory Hugo will read the models from relative to the site directory
+  export HUGO_MODEL_DATA_DIR="data/$model_output_path"
 
   mvn \
     --quiet \
     -f "${METASCHEMA_DIR}/support/pom.xml" exec:java \
     -Dexec.mainClass="com.xmlcalabash.drivers.Main" \
-    -Dexec.args="-i source=$model_path output-path=file://$model_data/ ${METASCHEMA_DIR}/src/document/write-hugo-metaschema-docs.xpl"
+    -Dexec.args="-i source=$model_path output-path=file://${SITE_DIR}/$HUGO_MODEL_DATA_DIR/ ${METASCHEMA_DIR}/src/document/write-hugo-metaschema-docs.xpl"
 
   archetype=""
   model_doc_path=""
@@ -160,6 +170,7 @@ do {
   fi
 
   {
+    echo "Generate ${archetype} Index Page: ${SITE_DIR} (${model_doc_path})" >&2
     cd "${SITE_DIR}"
     hugo new --kind "${archetype}" "${model_doc_path}"
   }
