@@ -36,7 +36,7 @@ This repository uses [Lychee](https://lychee.cli.rs/#/) to crawl the built site 
 To perform link-checking, run the target `make linkcheck`.
 The link checker produces a report, nominally located at `./lychee_report.md`.
 
-Lychee is configured to ignore URL patterns present in the [`./support/lychee_ignore.txt`](./support/lychee_ignore.txt).
+Lychee is configured to ignore URL patterns present in the [`./support/lychee.toml`](./support/lychee.toml).
 
 [Additional configuration](https://lychee.cli.rs/#/usage/cli) can be specified using the Makefile variable `LYCHEE_EXTRA_FLAGS`:
 
