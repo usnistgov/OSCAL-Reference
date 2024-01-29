@@ -1,0 +1,18 @@
+<nav class="usa-breadcrumb" id="breadcrumbs" aria-label="Breadcrumbs,,">
+    <ol class="usa-breadcrumb__list">
+        {{ range .Ancestors.Reverse }}
+            <li class="usa-breadcrumb__list-item">
+                <a href="{{ .RelPermalink }}" class="usa-breadcrumb__link">
+                    <span>
+                        {{ if eq .LinkTitle "OSCAL - Open Security Controls Assessment Language" }}
+                            {{ "OSCAL Home" }}
+                        {{ else }}
+                            {{ .LinkTitle }}
+                        {{ end }}
+                    </span>
+                    <!-- {{ .LinkTitle }} &gt; -->
+                </a>
+            </li>
+        {{ end }}
+    </ol>
+</nav>
