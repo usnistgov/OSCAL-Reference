@@ -11,8 +11,10 @@ OSCAL_DIR="${ROOT_DIR}/support/OSCAL"
 TAGS=$(cd "${OSCAL_DIR}"; git tag)
 
 # filter out non-version tags (anything that isn't in a vX.X.X, milestones, release candidates, etc.)
-TAGGED_REVISIONS=$(echo "${TAGS}" | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$')
+TAGGED_REVISIONS=$(echo "${TAGS}" | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+(-\S+)?$')
 # sort tags (which should be in semver-ish format)
 TAGGED_REVISIONS=$(echo "${TAGGED_REVISIONS}" | sort -t "." -k1,1n -k2,2n -k3,3n)
+# Filter out pre-1.0 pre-releases
+TAGGED_REVISIONS=$(echo "${TAGGED_REVISIONS}" | grep -v -E '^v1\.0\.0-.*')
 
 echo "${TAGGED_REVISIONS}"
