@@ -48,8 +48,7 @@ environment:
 
 .PHONY: serve
 serve: modeldoc release-assets ## Spin up a static web server for local dev
-	cd site
-	hugo serve
+	cd site && hugo serve
 
 .PHONY: site
 site: $(SITE_OUTPUT_DIR) ## Build the site
