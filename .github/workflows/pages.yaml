@@ -149,7 +149,7 @@ jobs:
           make linkcheck LYCHEE_EXTRA_FLAGS='--github-token ${{ secrets.GITHUB_TOKEN }} \
             ${{ steps.get-prototype-branches.outputs.linkcheck_exclude_path_arg && format('{0}', steps.get-prototype-branches.outputs.linkcheck_exclude_path_arg) || '' }}'
       - name: Upload linkcheck report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: linkcheck-report
           path: lychee_report.md
